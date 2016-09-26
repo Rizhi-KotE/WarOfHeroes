@@ -1,0 +1,8 @@
+.cell{
+    width: 100px;
+    height: 100px;
+    background-color: #B33E04;
+    border: 7px solid #B39004;
+    padding: 0;
+    border-collapse: collapse;
+}
