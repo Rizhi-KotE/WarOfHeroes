@@ -1,5 +1,5 @@
-(function () {
-    angular.module("battleModule", ["ui.router"])
+define("BattleModule", ["angular", "angular-ui-router"], function BattleModule(angular) {
+    angular.module("BattleModule", ["ui.router"])
         .config(["$stateProvider", function battleStateConfig($stateProvider) {
             $stateProvider
                 .state("battle", {
@@ -25,4 +25,4 @@
                 $scope.lines.push(line);
             }
         }])
-})()
+})

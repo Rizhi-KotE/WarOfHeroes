@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="webjars/angularjs/1.5.8/angular.min.js"></script>
-    <script src="webjars/angular-ui-router/0.2.18/angular-ui-router.min.js"></script>
-    <script src="battleComponent/BattleModule.js"></script>
-    <link rel="stylesheet" href="battleComponent/battleStyles.css">
-    <link type="text/css" href="battleComponent/battleStyles.css"/>
+    <script src="webjarsjs"></script>
+    <script data-main="battleComponent/app" src="/webjars/requirejs/2.3.1/require.min.js"></script>
 </head>
-<body ng-app="battleModule">
-    <div ui-view></div>
-</body>
+<body>
+<ui-view></ui-view>
 </body>
 </html>
