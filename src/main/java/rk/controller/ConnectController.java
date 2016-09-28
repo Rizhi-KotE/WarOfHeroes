@@ -2,6 +2,7 @@ package rk.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
@@ -22,7 +23,7 @@ public class ConnectController {
     SendMessageService sendMessageService;
 
     @SubscribeMapping(value = "/queue/play")
-    public void subscribe(Principal p) {
+    public void subscribe(Principal p, SimpMessageHeaderAccessor accessor) {
         sendMessageService.addUser(p.getName());
     }
 }
