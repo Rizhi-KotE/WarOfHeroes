@@ -9,11 +9,14 @@ require(["sockjs-client", "WarOfHeroesApp"], function (SockJS) {
             })
             function connect() {
                 $stomp
-                    .connect('/battle', {})
+                    .connect('/battle')
 
                     // frame = CONNECTED headers
                     .then(function (frame) {
                         $log.info("connected");
+                        var subscription = $stomp.subscribe("/user/queue/play", function (resp) {
+                            $log.info(resp);
+                        })
                     })
             }
 

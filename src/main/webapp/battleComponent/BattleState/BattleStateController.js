@@ -1,4 +1,4 @@
-require("WarOfHeroesApp", function () {
+require(["WarOfHeroesApp"], function () {
     angular.module("WarOfHeroesApp")
         .controller("battleController", ["$scope", function battleController($scope) {
             var vm = this;
