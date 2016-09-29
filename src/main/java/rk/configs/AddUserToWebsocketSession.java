@@ -18,10 +18,12 @@ public class AddUserToWebsocketSession implements HandshakeInterceptor {
     @Autowired
     AuthenticationManager authenticationManager;
 
+    int i;
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map<String, Object> map) throws Exception {
         try {
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("Username", "password");
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("Username" + i++, "password");
             Authentication authentication = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {

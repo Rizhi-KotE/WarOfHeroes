@@ -5,6 +5,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
+import rk.game.core.WaitingGameQueueService;
+import rk.game.model.Player;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -12,18 +14,15 @@ import java.util.Map;
 
 @Controller
 public class ConnectController {
-    @MessageMapping(value = "/connect")
-    public Map<String, String> connect(Principal principal) {
-        Map<String, String> out = new HashMap<>();
-        out.put("user", principal.getName());
-        return out;
-    }
 
     @Autowired
-    SendMessageService sendMessageService;
+    private WaitingGameQueueService waitingGameQueueService;
 
-    @SubscribeMapping(value = "/queue/play")
-    public void subscribe(Principal p, SimpMessageHeaderAccessor accessor) {
-        sendMessageService.addUser(p.getName());
+    @MessageMapping(value = "/queue/game.start")
+    public void gameStart(Principal p) {
+        String username = p.getName();
+        Player player = new Player();
+        player.setUsername(username);
+        waitingGameQueueService.addPlayer(player);
     }
 }

@@ -1,4 +1,4 @@
-package rk.game;
+package rk.game.model;
 
 import lombok.Data;
 

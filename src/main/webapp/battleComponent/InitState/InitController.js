@@ -14,9 +14,11 @@ require(["sockjs-client", "WarOfHeroesApp"], function (SockJS) {
                     // frame = CONNECTED headers
                     .then(function (frame) {
                         $log.info("connected");
-                        var subscription = $stomp.subscribe("/user/queue/play", function (resp) {
-                            $log.info(resp);
-                        })
+                        function callback(payload){
+                            $log.info(payload);
+                        }
+                        var subscription = $stomp.subscribe("/user/queue/game*", callback)
+                        $stomp.send("/user/queue/game.start");
                     })
             }
 
