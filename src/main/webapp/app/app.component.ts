@@ -1,17 +1,23 @@
-import {Component} from "@angular/core";
+import {Component, OnInit} from "@angular/core";
+import {WebSocketService} from "./websocket.service";
+import {Stomp} from "stompjs";
+import SockJS from "sockjs-client";
 
 @Component({
     selector: "my-app",
-       template: `
-    <h1>{{title}}</h1>
-   <nav>
-     <a routerLink="/dashboard">Dashboard</a>
-     <a routerLink="/heroes">Heroes</a>
-   </nav>
-    <router-outlet></router-outlet>
-    `
+    template: `<h1>War of Heroes</h1>`
 })
 
-export class AppComponent {
-    title = "Tour of Heroes"
+
+export class AppComponent implements OnInit {
+    ngOnInit(): void {
+        var ws = new SockJS("/battle")
+        var stompClient = Stomp.over(ws);
+        stompClient.connect({}, frame => {
+            console.log(frame);
+        })
+    }
+
+    constructor(private webSocketService: WebSocketService) {
+    }
 }
