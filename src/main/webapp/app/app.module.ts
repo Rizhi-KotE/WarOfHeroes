@@ -4,6 +4,7 @@ import {FormsModule} from "@angular/forms";
 import {RouterModule} from "@angular/router";
 import {AppComponent} from "./app.component";
 import {WebSocketService} from "./websocket.service";
+import {StompService} from "./stomp.service";
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import {WebSocketService} from "./websocket.service";
         BrowserModule,
     ],
     providers: [
-        WebSocketService
+        WebSocketService,
+        StompService
     ],
     declarations: [
         AppComponent
