@@ -18,11 +18,11 @@ export class StompService {
         })
     }
 
-    send(destination: string): void {
+    send(destination: string, body?: Object): void {
         if(!this.stompClientPromise){
             this.connect();
         }
-        this.stompClientPromise.then(client  => client.send(destination));
+        this.stompClientPromise.then(client  => client.send(destination, {}, JSON.stringify(body)));
     }
 
     subscribe(destination: string, callback: Function): void {

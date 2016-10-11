@@ -21,11 +21,13 @@
             '@angular/http': 'npm:@angular/http/bundles/http.umd.js',
             '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
             '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
+            '@angular/material': 'npm:@angular/material',
             // other libraries
             'rxjs': 'npm:rxjs',
             'angular-in-memory-web-api': 'npm:angular-in-memory-web-api',
             'stompjs': 'npm:stompjs',
-            'sockjs-client': "/libs/sockjs.min.js"
+            'sockjs-client': "/libs/sockjs.min.js",
+            'hammerjs': 'npm:hammerjs/hammer.min.js'
         },
         // packages tells the System loader how to load when no filename and/or no extension
         packages: {
@@ -34,6 +36,7 @@
                 defaultExtension: 'js'
             },
             rxjs: {
+                main: './bundles/Rx.min.js',
                 defaultExtension: 'js'
             },
             'stompjs': {
@@ -46,7 +49,11 @@
             'angular-in-memory-web-api': {
                 main: './index.js',
                 defaultExtension: 'js'
-            }
+            },
+            '@angular/material': {
+                format: 'cjs',
+                main: 'material.umd.js'
+            },
         }
     });
 })(this);

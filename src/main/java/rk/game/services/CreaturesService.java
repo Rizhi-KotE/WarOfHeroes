@@ -1,6 +1,7 @@
 package rk.game.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rk.game.model.Creature;
@@ -13,7 +14,15 @@ import java.util.*;
 @Service
 public class CreaturesService {
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
+
+    public Map<String, List<Creature>> getRaces() {
+        return races;
+    }
+
+    public void setRaces(Map<String, List<Creature>> races) {
+        this.races = races;
+    }
 
     private Map<String, List<Creature>> races = new HashMap<>();
 

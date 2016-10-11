@@ -13,7 +13,7 @@ import java.util.List;
 public class WaitingGameQueueService {
 
     @Autowired
-    private GameServerFactory gameServerFactory;
+    private GameServerDispatcher dispatcher;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -27,10 +27,10 @@ public class WaitingGameQueueService {
     }
 
     private void runGame() {
-        if (waitingQueue.size() < 2) {
+        if (waitingQueue.size() < 1) {
             return;
         }
-        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), waitingQueue.pollFirst());
-        gameServerFactory.startGame(playersToNewGame);
+        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst());
+        dispatcher.runGame(playersToNewGame);
     }
 }
