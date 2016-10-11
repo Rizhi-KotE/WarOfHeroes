@@ -5,18 +5,30 @@ import {RouterModule} from "@angular/router";
 import {AppComponent} from "./app.component";
 import {WebSocketService} from "./websocket.service";
 import {StompService} from "./stomp.service";
+import {StartPageComponent} from "./start-page.component";
+import {FieldComponent} from "./field.component";
 
 
 @NgModule({
     imports: [
         BrowserModule,
+        RouterModule.forRoot([
+            {
+                path: "",
+                component: StartPageComponent
+            },
+            {
+                path: "field",
+                component: FieldComponent
+            }
+        ])
     ],
     providers: [
         WebSocketService,
         StompService
     ],
     declarations: [
-        AppComponent
+        AppComponent, StartPageComponent, FieldComponent
     ],
     bootstrap: [AppComponent]
 })
