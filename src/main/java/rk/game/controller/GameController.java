@@ -15,6 +15,7 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
+@MessageMapping("queue/game")
 public class GameController {
 
     @Autowired
@@ -23,7 +24,7 @@ public class GameController {
     @Autowired
     private GameServerDispatcher dispatcher;
 
-    @MessageMapping(value = "/queue/game.start")
+    @MessageMapping(value = ".start")
     public void gameStart(Principal p, @Payload @Valid List<CreaturesStack> creatureChoice) {
         String username = p.getName();
         Player player = new Player();
@@ -32,7 +33,12 @@ public class GameController {
         waitingGameQueueService.addPlayer(player);
     }
 
-    @MessageMapping(value = "/queue/game.step")
+    @MessageMapping(value = ".creatures")
+    public void getCreatures(){
+
+    }
+
+    @MessageMapping(value = ".step")
     public void userStep(Principal p, @Payload @Valid Cell cell){
         dispatcher.userStep(p.getName(), cell);
     }

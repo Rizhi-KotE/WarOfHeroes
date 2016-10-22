@@ -12,10 +12,10 @@ export class FieldComponent {
     matrix: Cell[][] = new Array();
 
     constructor(private gameServer: GameService) {
-        this.gameServer.subscribe("/user/queue/game*").subscribe(next => this.matrix = next);
+        this.gameServer.getCreatures().then(matrix => this.matrix = matrix);
     }
 
     onClick(message: Cell): void {
-    	this.gameServer.send("/user/queue/game.step", {x: message.x; y: message.y})
+    	this.gameServer.makeAMove(message).then();
     }
 }

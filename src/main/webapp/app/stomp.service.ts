@@ -2,10 +2,9 @@ import {Injectable} from "@angular/core";
 import {Stomp} from "stompjs";
 import SockJS from "sockjs-client";
 
-
 @Injectable()
 export class StompService {
-    stompClientPromise: Promise<StompClient>;
+    stompClientPromise: Promise<any>;
 
     connect(): void {
         this.stompClientPromise = new Promise((resolve, reject)=> {
