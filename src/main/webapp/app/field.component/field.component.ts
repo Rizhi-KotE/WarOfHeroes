@@ -1,11 +1,19 @@
 import {Component, OnInit} from "@angular/core";
 import {Cell} from "../model/Cell";
 import {GameService} from "../game.service/game.service";
-import {Creature} from "../model/creature";
+import {CreatureStack} from "../model/creatureStack";
 
 @Component({
-    templateUrl: "/app/field.component/field.component.html"
-
+    template: `
+<table>
+    <tr *ngFor="let line of matrix">
+        <td *ngFor="let cell of line">
+        	<cell (click)="onClick($event)" [cell]="cell"></cell>
+        </td>
+    </tr>
+</table>
+<creatures_queue [creatures]="creatures"></creatures_queue>
+<button (click)="getCreatures()"></button>`
 })
 
 
@@ -22,10 +30,10 @@ export class FieldComponent implements OnInit{
     }
 
     matrix: Cell[][];
-    creatures: Creature[];
+    creatures: CreatureStack[];
 
     constructor(private gameServer: GameService) {
-        this.gameServer.getCreatures().then(creatures => this.creatures = creatures.map(stack=>stack.creature));
+        this.gameServer.getCreatures().then(creatures => this.creatures = creatures);
     }
 
     onClick(message: Cell): void {
@@ -33,6 +41,6 @@ export class FieldComponent implements OnInit{
     }
 
     getCreatures(): void {
-        this.gameServer.getCreatures().then(creatures => this.creatures = creatures.map(stack=>stack.creature));
+        this.gameServer.getCreatures().then(creatures => this.creatures = creatures);
     }
 }

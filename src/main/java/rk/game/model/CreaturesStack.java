@@ -7,5 +7,5 @@ import rk.game.model.Creature;
 public class CreaturesStack {
     private Creature creature;
 
-    private int stackSize;
+    private int size;
 }
