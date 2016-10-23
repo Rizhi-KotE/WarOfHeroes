@@ -11,6 +11,7 @@ import {MaterialModule} from "@angular/material";
 import {CreatureComponent} from "./creatures.component/creature.component";
 import {GameService} from "./game.service/game.service";
 import {CellComponent} from "./field.component/cell.component";
+import {CreaturesQueueComponent} from "./creatures_queue/creatures_queue";
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import {CellComponent} from "./field.component/cell.component";
         StartPageComponent,
         FieldComponent,
         CreatureComponent,
-        CellComponent
+        CellComponent,
+        CreaturesQueueComponent
     ],
     bootstrap: [AppComponent]
 })

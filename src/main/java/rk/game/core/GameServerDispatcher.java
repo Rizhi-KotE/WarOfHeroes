@@ -12,7 +12,7 @@ import java.util.Map;
 @Service
 public class GameServerDispatcher {
 
-    Map<String, GameServer> map = new HashMap<>();
+    private Map<String, GameServer> map = new HashMap<>();
 
     @Autowired
     private GameServer server;
@@ -21,6 +21,10 @@ public class GameServerDispatcher {
         server.setPlayers(players);
         players.forEach(player -> map.put(player.getUsername(), server));
         server.startGame();
+    }
+
+    public GameServer getServer(String username) {
+        return map.get(username);
     }
 
     public void userStep(String name, Cell cell) {

@@ -7,9 +7,13 @@ import org.springframework.stereotype.Service;
 import rk.game.model.Creature;
 
 import javax.annotation.PostConstruct;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CreaturesService {
@@ -29,11 +33,15 @@ public class CreaturesService {
     @PostConstruct
     void loadCreaturesResources(){
         File dir = new File("./src/main/resources/creatures");
-        File[] jsons = dir.listFiles();
+        FileFilter filter = new FileNameExtensionFilter("", "crt");
+        File[] jsons = dir.listFiles(pathname -> filter.accept(pathname));
         for(File file: jsons){
             try {
                 Creature[] creatures = objectMapper.readValue(file, Creature[].class);
-                races.put(file.getName(), Arrays.asList(creatures));
+                List<Creature> filtered = Arrays.asList(creatures)
+                        .stream().filter(creature -> creature.getName() != null && creature.getName().length() > 0)
+                        .collect(Collectors.toList());
+                races.put(file.getName(), filtered);
             } catch (IOException e) {
                 e.printStackTrace();
             }

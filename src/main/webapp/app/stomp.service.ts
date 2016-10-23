@@ -8,7 +8,7 @@ export class StompService {
 
     connect(): void {
         this.stompClientPromise = new Promise((resolve, reject)=> {
-            var ws = new SockJS("/battle");
+            var ws = new SockJS("/game/connect");
             var stompClient = Stomp.over(ws);
             stompClient.connect({}, frame => {
                 console.log(frame);

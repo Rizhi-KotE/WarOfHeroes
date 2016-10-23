@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import rk.game.controller.GameController;
 import rk.game.model.Cell;
 import rk.game.model.Field;
 import rk.game.model.Player;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,15 +37,13 @@ public class GameServer {
     }
 
     @Autowired
-    private SimpMessagingTemplate template;
+    private GameController controller;
 
     private Field field;
 
     public void startGame() {
-        initField(players.get(0), RIGHT);
-        currentPlayer = players.get(0);
         for (Player player : players) {
-            template.convertAndSendToUser(player.getUsername(), "/queue/game.run", fieldMap.get(player).getMatrix());
+            controller.startGame(player.getUsername(), Arrays.asList("start"));
         }
     }
 
@@ -65,6 +65,10 @@ public class GameServer {
     }
 
     public void userStep(Cell cell) {
-        template.convertAndSendToUser(currentPlayer.getUsername(), "/queue/game.answer", cell);
+        controller.gameAnswer(currentPlayer, cell);
+    }
+
+    public Player getPlayer(String name) {
+        return players.stream().reduce(null, (result, player) -> name.equals(player.getUsername()) ? player : result);
     }
 }

@@ -11,4 +11,5 @@ public class Creature {
     private int shoots;
     private int health;
     private int mana;
+    private String image;
 }

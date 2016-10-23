@@ -3,7 +3,15 @@ package rk.game.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import rk.game.core.GameServer;
 import rk.game.core.GameServerDispatcher;
 import rk.game.model.Cell;
 import rk.game.model.CreaturesStack;
@@ -12,10 +20,10 @@ import rk.game.model.Player;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 
-@Controller
-@MessageMapping("queue/game")
+@RestController
 public class GameController {
 
     @Autowired
@@ -24,22 +32,34 @@ public class GameController {
     @Autowired
     private GameServerDispatcher dispatcher;
 
-    @MessageMapping(value = ".start")
-    public void gameStart(Principal p, @Payload @Valid List<CreaturesStack> creatureChoice) {
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @RequestMapping(value = "/game/start", method = RequestMethod.POST)
+    public List<String> gameStart(Principal p, @RequestBody @Valid List<CreaturesStack> creatureChoice) {
         String username = p.getName();
         Player player = new Player();
         player.setUsername(username);
         player.setCreatures(creatureChoice);
-        waitingGameQueueService.addPlayer(player);
+        return Arrays.asList(waitingGameQueueService.addPlayer(player));
     }
 
-    @MessageMapping(value = ".creatures")
-    public void getCreatures(){
-
+    @RequestMapping(value = "/game/creatures")
+    public List<CreaturesStack> getCreatures(Principal principal){
+        GameServer server = dispatcher.getServer(principal.getName());
+        return server.getPlayer(principal.getName()).getCreatures();
     }
 
-    @MessageMapping(value = ".step")
-    public void userStep(Principal p, @Payload @Valid Cell cell){
+    @RequestMapping(value = "/queue/game/step")
+    public void userStep(Principal p, @RequestBody Cell cell){
         dispatcher.userStep(p.getName(), cell);
+    }
+
+    public void startGame(String username, Object message){
+        template.convertAndSendToUser(username, "/queue/game.run", message);
+    }
+
+    public void gameAnswer(Player player, Cell cell) {
+        template.convertAndSendToUser(player.getUsername(), "/queue/game.answer", cell);
     }
 }

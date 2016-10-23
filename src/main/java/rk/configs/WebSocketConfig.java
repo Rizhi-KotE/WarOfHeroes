@@ -32,11 +32,9 @@ public class WebSocketConfig extends AbstractSecurityWebSocketMessageBrokerConfi
         return true;
     }
 
-    @Autowired
-    private AddUserToWebsocketSession handshake;
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/battle").withSockJS().setInterceptors(handshake);
+        registry.addEndpoint("/game/connect").withSockJS();
     }
 
 }

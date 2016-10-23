@@ -33,8 +33,7 @@ export class StartPageComponent implements OnInit{
             }
             return result;
         }, new Array());
-        this.gameService.start(body);
-        this.router.navigate(["field"])
+        this.gameService.start(body).then(()=>this.router.navigate(["field"]));
     }
 
     constructor(private gameService: GameService, private router: Router, private http: Http) {}
