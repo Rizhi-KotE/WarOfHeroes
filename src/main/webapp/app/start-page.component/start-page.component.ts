@@ -7,7 +7,7 @@ import {Http} from "@angular/http";
 @Component({
     selector: "my-app",
     template: `<button (click)="click()">Start Game</button>
-    <creatures [(creatures)]="creaturesChoice"></creatures>`
+    <!--<creatures [(creatures)]="creaturesChoice"></creatures>-->`
 })
 
 
@@ -17,18 +17,19 @@ export class StartPageComponent implements OnInit{
             responce => {
                 this.creaturesChoice = responce.json()[0].map(creature => {
                     var creatureChoice : CreatureStack = new CreatureStack();
-                    creatureChoice.stackSize = 0;
+                    creatureChoice.size = 10;
                     creatureChoice.creature = creature;
                     return creatureChoice;
                 });
             })
+            .then(()=>this.click())
     }
     creaturesChoice: Array<CreatureStack>;
 
 
     click(): void {
         var body =  this.creaturesChoice.reduce((result, choice: CreatureStack)=>{
-            if(choice.stackSize!=0){
+            if(choice.size!=0){
                 result.push(choice)
             }
             return result;

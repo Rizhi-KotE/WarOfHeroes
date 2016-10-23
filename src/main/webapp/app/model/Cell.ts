@@ -1,6 +1,6 @@
 import {CreatureStack} from "./creatureStack";
 export class Cell {
-    creatureStack: CreatureStack;
+    stack: CreatureStack;
     available: boolean;
     x: number;
     y: number;

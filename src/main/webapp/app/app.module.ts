@@ -31,7 +31,10 @@ import {CreaturesQueueComponent} from "./creatures_queue/creatures_queue";
                 path: "creatures",
                 component: CreatureComponent
             }
-        ]),
+        ],
+            {
+                useHash: true
+            }),
         MaterialModule.forRoot()
     ],
     providers: [
