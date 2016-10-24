@@ -10,7 +10,7 @@ import {FieldComponent} from "./field.component/field.component";
 import {MaterialModule} from "@angular/material";
 import {CreatureComponent} from "./creatures.component/creature.component";
 import {GameService} from "./game.service/game.service";
-import {CellComponent} from "./field.component/cell.component";
+import {CellComponent} from "./field_cell/cell.component";
 import {CreaturesQueueComponent} from "./creatures_queue/creatures_queue";
 import {CreatureStackComponent} from "./creature_stack.component/creature_stack.component";
 
@@ -29,7 +29,7 @@ import {CreatureStackComponent} from "./creature_stack.component/creature_stack.
                 component: FieldComponent
             },
             {
-                path: "creatures",
+                path: "creaturesQueue",
                 component: CreatureComponent
             }
         ],
