@@ -5,33 +5,31 @@ import {CreatureStack} from "../model/creatureStack";
 import {GameService} from "../game.service/game.service";
 import {NullCell} from "../model/nullCell";
 import {MoveCreatureCommand} from "../model/moveCreatureCommand";
+import {Command} from "../model/Command";
+import {AddCreatureCommand} from "../model/addCreauteCommand";
 
 @Injectable()
 export class GameEngine {
-    creaturesMovementObservable: Subject<MoveCreatureCommand> = new Subject<MoveCreatureCommand>();
+    commandChainSubject: Subject<Command> = new Subject<Command>();
     creaturesListObservable: Subject<CreatureStack[]> = new Subject<CreatureStack[]>();
+    command: Command;
 
-    currentCreatureCell: Cell = new NullCell();
-    creaturesList: CreatureStack[];
-
-    creatureMove(): Observable<MoveCreatureCommand> {
-        return this.creaturesMovementObservable.asObservable();
+    commandChain(): Observable<Command> {
+        return this.commandChainSubject.asObservable();
     }
 
     chooseCell(cell: Cell): void {
-        if (cell.stack) {
-            this.creaturesMovementObservable.next(new MoveCreatureCommand(this.currentCreatureCell, cell));
-            if (!this.currentCreatureCell.stack) {
-                this.setCreatures(this.creaturesList.filter(creature => creature !== this.currentCreatureCell.stack));
-            }
-            this.currentCreatureCell = cell;
+        if (this.command) {
+            this.command.complete(cell.x, cell.y);
+            this.commandChainSubject.next(this.command);
+            this.command = null;
+        } else {
+            this.command = new MoveCreatureCommand(cell);
         }
-        this.currentCreatureCell = null;
     }
 
     chooseStack(stack: CreatureStack): void {
-        this.currentCreatureCell = new NullCell();
-        this.currentCreatureCell.stack = stack;
+            this.command = new AddCreatureCommand(stack);
     }
 
     getCreaturesObservable(): Observable<CreatureStack[]> {
@@ -43,7 +41,6 @@ export class GameEngine {
     }
 
     private setCreatures(creatures: CreatureStack[]) {
-        this.creaturesList = creatures;
-        this.creaturesListObservable.next(this.creaturesList);
+        this.creaturesListObservable.next(creatures);
     }
 }

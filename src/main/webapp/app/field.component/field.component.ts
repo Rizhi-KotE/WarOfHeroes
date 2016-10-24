@@ -4,6 +4,9 @@ import {GameService} from "../game.service/game.service";
 import {CreatureStack} from "../model/creatureStack";
 import {GameEngine} from "../game_engine/game_engine.service";
 import {NullCell} from "../model/nullCell";
+import {MoveCreatureCommand} from "../model/moveCreatureCommand";
+import {AddCreatureCommand} from "../model/addCreauteCommand";
+import {RemoveCreatureCommand} from "../model/removeCreatureCommand";
 
 @Component({
     selector: "field",
@@ -34,17 +37,23 @@ export class FieldComponent implements OnInit{
     matrix: Cell[][];
 
     constructor(private gameEngine: GameEngine) {
-        this.gameEngine.creatureMove().subscribe(move => {
-            if(move.output instanceof NullCell) {
-                this.matrix[move.input.x][move.input.y].stack = move.output.stack;
-            }else {
-                this.matrix[move.input.x][move.input.y].stack = move.output.stack;
-                this.matrix[move.output.x][move.output.y].stack = move.input.stack;
-            }
-        })
+        this.gameEngine.commandChain().subscribe(command =>this[command.type](command));
+    }
+
+    addCreature(command: AddCreatureCommand) {
+        this.matrix[command.x][command.y].stack = command.creature;
+    }
+
+    moveCreature(moveCommand: MoveCreatureCommand) {
+        this.matrix[moveCommand.input.x][moveCommand.input.y].stack = moveCommand.output.stack;
+        this.matrix[moveCommand.output.x][moveCommand.output.y].stack = null;
+    }
+
+    removeCreature(command: RemoveCreatureCommand) {
+        this.matrix[command.x][command.y].stack = null;
     }
 
     chooseCell(message: Cell): void {
-    	this.gameEngine.chooseCell(message);
+        this.gameEngine.chooseCell(message.clone());
     }
 }
