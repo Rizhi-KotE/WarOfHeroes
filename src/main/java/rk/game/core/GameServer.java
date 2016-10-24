@@ -5,18 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import rk.game.command.AddCreatureCommand;
+import rk.game.command.StartPlacingCommand;
 import rk.game.controller.GameController;
-import rk.game.model.Cell;
-import rk.game.model.Field;
-import rk.game.model.Player;
+import rk.game.model.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
-@Component
+@Service
 @Scope(value = "prototype")
 public class GameServer {
     public static final int RIGHT = 0;
@@ -39,8 +37,6 @@ public class GameServer {
     @Autowired
     private GameController controller;
 
-    private Field field;
-
     public void startGame() {
         for (Player player : players) {
             controller.startGame(player.getUsername(), Arrays.asList("start"));
@@ -62,6 +58,24 @@ public class GameServer {
                 }
             }
         }
+    }
+
+    public StartPlacingCommand placingCreatures(Player player) {
+        Cell[][] matrix = fieldMap.get(player).getMatrix();
+        int side = players.indexOf(player);
+        int j = 9 * (side % 2);
+        int i = 0;
+        List<AddCreatureCommand> list = new ArrayList<>(10);
+        for (CreaturesStack creature : player.getCreatures()) {
+            AddCreatureCommand creatureCommand = new AddCreatureCommand();
+            creatureCommand.setX(i);
+            creatureCommand.setY(j);
+            creatureCommand.setStack(creature);
+            list.add(creatureCommand);
+            matrix[i][j].setStack(creature);
+            i++;
+        }
+        return new StartPlacingCommand(list);
     }
 
     public void userStep(Cell cell) {

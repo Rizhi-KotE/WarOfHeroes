@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {CreatureStack} from "../model/creatureStack";
 import {StompService} from "../stomp.service";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {Http} from "@angular/http"
 
 @Injectable()
@@ -9,7 +9,7 @@ export class GameService {
     subject: BehaviorSubject<any>;
 
     start(creaturesChoice: CreatureStack): Promise<any> {
-        return this.http.post("/game/start", creaturesChoice).map(responce => responce.json()).toPromise();
+        return this.http.post("/game/start", creaturesChoice).map(responce => responce.json()).toPromise()
     }
 
     subscribe(destination: string) {
@@ -18,6 +18,10 @@ export class GameService {
 
     getCreatures(): Promise<CreatureStack[]> {
         return this.http.get("/game/creatures").map(body => body.json() as CreatureStack[]).toPromise();
+    }
+
+    sendCreaturesPlacingMessage(): void {
+        this.stompService.send("/user/queue/game.creatures");
     }
 
     makeAMove(message): Promise<any> {
@@ -29,5 +33,9 @@ export class GameService {
         this.stompService.subscribe("/user/queue/game*", result => {
             this.subject.next(JSON.parse(result.body));
         });
+    }
+
+    commandChain(): Observable<any> {
+        return this.subject.asObservable();
     }
 }

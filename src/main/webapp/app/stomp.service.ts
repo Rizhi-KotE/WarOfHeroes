@@ -24,10 +24,10 @@ export class StompService {
         this.stompClientPromise.then(client  => client.send(destination, {}, JSON.stringify(body)));
     }
 
-    subscribe(destination: string, callback: Function): void {
+    subscribe(destination: string, callback: Function): Promise<any> {
         if(!this.stompClientPromise){
             this.connect();
         }
-        this.stompClientPromise.then(client  => client.subscribe(destination, callback))
+        return this.stompClientPromise.then(client  => client.subscribe(destination, callback))
     }
 }

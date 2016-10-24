@@ -37,7 +37,12 @@ export class GameEngine {
     }
 
     constructor(private gameService: GameService) {
-        this.gameService.getCreatures().then(creatures => this.setCreatures(creatures));
+        // this.gameService.getCreatures().then(creatures => this.setCreatures(creatures));
+        this.gameService.commandChain()
+            .filter(command => command)
+            .filter(command => typeof this[command.type] === "function")
+            .subscribe(command => this[command.type](command));
+        this.gameService.sendCreaturesPlacingMessage();
     }
 
     private setCreatures(creatures: CreatureStack[]) {

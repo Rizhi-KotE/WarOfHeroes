@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import rk.game.command.StartPlacingCommand;
 import rk.game.core.GameServer;
 import rk.game.core.GameServerDispatcher;
 import rk.game.model.Cell;
@@ -50,6 +51,14 @@ public class GameController {
         return server.getPlayer(principal.getName()).getCreatures();
     }
 
+    @MessageMapping(value = "/queue/game.creatures")
+    @SendToUser(value = "/queue/game.message")
+    public StartPlacingCommand getCreaturesPlacing(Principal principal){
+        GameServer server = dispatcher.getServer(principal.getName());
+        Player player = dispatcher.getPlayer(principal.getName());
+        return server.placingCreatures(player);
+    }
+
     @RequestMapping(value = "/queue/game/step")
     public void userStep(Principal p, @RequestBody Cell cell){
         dispatcher.userStep(p.getName(), cell);
@@ -61,5 +70,9 @@ public class GameController {
 
     public void gameAnswer(Player player, Cell cell) {
         template.convertAndSendToUser(player.getUsername(), "/queue/game.answer", cell);
+    }
+
+    public void sendMessage(Player player, Object message){
+        template.convertAndSendToUser(player.getUsername(), "/queue/game.message", message);
     }
 }

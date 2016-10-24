@@ -17,8 +17,7 @@ import {RemoveCreatureCommand} from "../model/removeCreatureCommand";
         	<cell (click)="chooseCell(cell)" [cell]="cell"></cell>
         </td>
     </tr>
-</table>
-<creatures_queue></creatures_queue>`
+</table>`
 })
 
 
@@ -37,7 +36,9 @@ export class FieldComponent implements OnInit{
     matrix: Cell[][];
 
     constructor(private gameEngine: GameEngine) {
-        this.gameEngine.commandChain().subscribe(command =>this[command.type](command));
+        this.gameEngine.commandChain()
+            .filter(command => typeof this[command.type] ===  "function")
+            .subscribe(command =>this[command.type](command));
     }
 
     addCreature(command: AddCreatureCommand) {
