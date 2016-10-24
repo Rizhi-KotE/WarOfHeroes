@@ -2,6 +2,8 @@ import {Component, OnInit} from "@angular/core";
 import {Cell} from "../model/Cell";
 import {GameService} from "../game.service/game.service";
 import {CreatureStack} from "../model/creatureStack";
+import {GameEngine} from "../game_engine/game_engine.service";
+import {NullCell} from "../model/nullCell";
 
 @Component({
     selector: "field",
@@ -9,12 +11,11 @@ import {CreatureStack} from "../model/creatureStack";
 <table>
     <tr *ngFor="let line of matrix">
         <td *ngFor="let cell of line">
-        	<cell (click)="onClick(cell)" [cell]="cell"></cell>
+        	<cell (click)="chooseCell(cell)" [cell]="cell"></cell>
         </td>
     </tr>
 </table>
-<creatures_queue [creatures]="creatures" (choose)="chooseCreature($event)"></creatures_queue>
-<button (click)="getCreatures()"></button>`
+<creatures_queue></creatures_queue>`
 })
 
 
@@ -31,24 +32,19 @@ export class FieldComponent implements OnInit{
     }
 
     matrix: Cell[][];
-    creatures: CreatureStack[];
-    currentCreatureStack: CreatureStack;
 
-    constructor(private gameServer: GameService) {
-        this.gameServer.getCreatures().then(creatures => this.creatures = creatures);
+    constructor(private gameEngine: GameEngine) {
+        this.gameEngine.creatureMove().subscribe(move => {
+            if(move.output instanceof NullCell) {
+                this.matrix[move.input.x][move.input.y].stack = move.output.stack;
+            }else {
+                this.matrix[move.input.x][move.input.y].stack = move.output.stack;
+                this.matrix[move.output.x][move.output.y].stack = move.input.stack;
+            }
+        })
     }
 
-    onClick(message: Cell): void {
-    	this.matrix[message.x][message.y].stack = this.currentCreatureStack;
-        this.creatures = this.creatures.filter(creature => creature !== this.currentCreatureStack);
-        this.currentCreatureStack = null;
-    }
-
-    getCreatures(): void {
-        this.gameServer.getCreatures().then(creatures => this.creatures = creatures);
-    }
-
-    chooseCreature(message: CreatureStack): void{
-        this.currentCreatureStack = message;
+    chooseCell(message: Cell): void {
+    	this.gameEngine.chooseCell(message);
     }
 }

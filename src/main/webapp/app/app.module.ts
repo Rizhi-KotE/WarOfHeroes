@@ -13,6 +13,7 @@ import {GameService} from "./game.service/game.service";
 import {CellComponent} from "./field_cell/cell.component";
 import {CreaturesQueueComponent} from "./creatures_queue/creatures_queue";
 import {CreatureStackComponent} from "./creature_stack.component/creature_stack.component";
+import {GameEngine} from "./game_engine/game_engine.service";
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import {CreatureStackComponent} from "./creature_stack.component/creature_stack.
     providers: [
         WebSocketService,
         StompService,
-        GameService
+        GameService,
+        GameEngine
     ],
     declarations: [
         AppComponent,
