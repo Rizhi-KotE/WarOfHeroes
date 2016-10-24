@@ -5,16 +5,21 @@ import {CreatureStack} from "./creatureStack";
 export class MoveCreatureCommand implements Command {
     type: string = "moveCreature";
 
-    output: Cell;
-    input: Cell;
-    creature: CreatureStack;
+    outX: number;
+    outY: number;
+    inX: number;
+    inY: number;
+    stack: CreatureStack;
 
     complete(x: number, y: number) {
-        this.input = new Cell(x, y);
+        this.inX = x;
+        this.inY = y;
     }
 
-    constructor(output: Cell, input?: Cell) {
-        this.output = output;
-        this.input = input;
+    constructor(outX: number, outY: number, inX?: number, inY?: number) {
+        this.outX = outX;
+        this.outY = outY;
+        this.inX = inX;
+        this.inY = inY;
     }
 }

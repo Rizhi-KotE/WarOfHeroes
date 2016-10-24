@@ -20,17 +20,11 @@ export class GameEngine {
     }
 
     chooseCell(cell: Cell): void {
-        if (this.command) {
-            this.command.complete(cell.x, cell.y);
-            this.commandChainSubject.next(this.command);
-            this.command = null;
-        } else {
-            this.command = new MoveCreatureCommand(cell);
-        }
+        this.gameService.sendMoveCreatureMessage(cell);
     }
 
     chooseStack(stack: CreatureStack): void {
-            this.command = new AddCreatureCommand(stack);
+        this.command = new AddCreatureCommand(stack);
     }
 
     getCreaturesObservable(): Observable<CreatureStack[]> {
@@ -41,8 +35,13 @@ export class GameEngine {
         // this.gameService.getCreatures().then(creatures => this.setCreatures(creatures));
         this.gameService.commandChain()
             .filter(command => command)
-            .filter(command => typeof this[command.type] === "function")
-            .subscribe(command => this[command.type](command));
+            .subscribe(command => {
+                if (typeof this[command.type] === "function") {
+                    this[command.type](command)
+                } else {
+                    this.commandChainSubject.next(command);
+                }
+            });
         this.gameService.sendCreaturesPlacingMessage();
     }
 

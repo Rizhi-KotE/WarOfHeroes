@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import rk.game.command.MoveCreatureCommand;
 import rk.game.command.StartPlacingCommand;
 import rk.game.core.GameServer;
 import rk.game.core.GameServerDispatcher;
@@ -57,6 +58,13 @@ public class GameController {
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
         return server.placingCreatures(player);
+    }
+
+    @MessageMapping(value = "/queue/game.move")
+    @SendToUser(value = "/queue/game.message")
+    public MoveCreatureCommand MoveCreature(Principal principal, Cell cell){
+        GameServer server = dispatcher.getServer(principal.getName());
+        return server.makeStep(principal.getName(), cell);
     }
 
     @RequestMapping(value = "/queue/game/step")

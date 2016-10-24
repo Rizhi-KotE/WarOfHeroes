@@ -43,12 +43,12 @@ export class FieldComponent implements OnInit{
     }
 
     addCreature(command: AddCreatureCommand) {
-        this.matrix[command.x][command.y].stack = command.creature;
+        this.matrix[command.x][command.y].stack = command.stack;
     }
 
     moveCreature(moveCommand: MoveCreatureCommand) {
-        this.matrix[moveCommand.input.x][moveCommand.input.y].stack = moveCommand.output.stack;
-        this.matrix[moveCommand.output.x][moveCommand.output.y].stack = null;
+        this.matrix[moveCommand.inX][moveCommand.inY].stack = moveCommand.stack;
+        this.matrix[moveCommand.outX][moveCommand.outY] = new Cell(moveCommand.outX, moveCommand.outY);
     }
 
     removeCreature(command: RemoveCreatureCommand) {

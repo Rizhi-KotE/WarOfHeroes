@@ -8,5 +8,5 @@ public class AddCreatureCommand {
     private final String type = "addCreature";
     private int x;
     private int y;
-    private CreaturesStack creature;
+    private CreaturesStack stack;
 }

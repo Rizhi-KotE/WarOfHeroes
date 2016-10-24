@@ -3,10 +3,9 @@ package rk.game.core;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import rk.game.command.AddCreatureCommand;
+import rk.game.command.MoveCreatureCommand;
 import rk.game.command.StartPlacingCommand;
 import rk.game.controller.GameController;
 import rk.game.model.*;
@@ -23,14 +22,25 @@ public class GameServer {
 
     private Player currentPlayer;
 
-    private Map<Player, Field> fieldMap;
+    @Autowired
+    private Field field;
+
+    private CreaturesQueue queue;
+
+    @Autowired
+    GameServer(CreaturesQueue queue){
+        this.queue = queue;
+    }
+
+    @Autowired
+    private GameServerDispatcher dispatcher;
 
 
     public void setPlayers(List<Player> players) {
         this.players = players;
-        fieldMap = new HashMap<>();
         for (Player player : players) {
-            fieldMap.put(player, new Field());
+            placingCreatures(player);
+            queue.addAll(player.getCreatures());
         }
     }
 
@@ -43,25 +53,7 @@ public class GameServer {
         }
     }
 
-    private void initField(Player player, int side) {
-        Field field = fieldMap.get(player);
-        if (side == RIGHT) {
-            for (int line = 0; line < 3; line++) {
-                for (int column = 0; column < 10; column++) {
-                    field.getMatrix()[line][column].setAvailable(true);
-                }
-            }
-        } else if (side == LEFT) {
-            for (int line = 9; line >= 7; line--) {
-                for (int column = 0; column < 10; column++) {
-                    field.getMatrix()[line][column].setAvailable(true);
-                }
-            }
-        }
-    }
-
     public StartPlacingCommand placingCreatures(Player player) {
-        Cell[][] matrix = fieldMap.get(player).getMatrix();
         int side = players.indexOf(player);
         int j = 9 * (side % 2);
         int i = 0;
@@ -70,9 +62,9 @@ public class GameServer {
             AddCreatureCommand creatureCommand = new AddCreatureCommand();
             creatureCommand.setX(i);
             creatureCommand.setY(j);
-            creatureCommand.setCreature(creature);
+            creatureCommand.setStack(creature);
             list.add(creatureCommand);
-            matrix[i][j].setStack(creature);
+            field.addCreature(creature, i, j);
             i++;
         }
         return new StartPlacingCommand(list);
@@ -84,5 +76,18 @@ public class GameServer {
 
     public Player getPlayer(String name) {
         return players.stream().reduce(null, (result, player) -> name.equals(player.getUsername()) ? player : result);
+    }
+
+    public MoveCreatureCommand makeStep(String name, Cell cell) {
+        CreaturesStack stack = queue.getCurrentCreature();
+        queue.popCreature();
+        Cell currentCell = field.getCell(stack);
+        MoveCreatureCommand command = new MoveCreatureCommand();
+        command.setOutX(currentCell.x);
+        command.setOutY(currentCell.y);
+        command.setInX(cell.x);
+        command.setInY(cell.y);
+        command.setStack(stack);
+        return command;
     }
 }

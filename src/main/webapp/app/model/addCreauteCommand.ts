@@ -9,11 +9,11 @@ export class AddCreatureCommand implements Command {
     type: string = "addCreature";
     x: number;
     y: number;
-    creature: CreatureStack;
+    stack: CreatureStack;
 
     constructor(creature: CreatureStack, x?: number, y?: number) {
         this.x = x;
         this.y = y;
-        this.creature = creature;
+        this.stack = creature;
     }
 }

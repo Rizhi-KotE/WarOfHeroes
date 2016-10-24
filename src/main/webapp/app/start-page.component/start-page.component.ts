@@ -13,7 +13,7 @@ import {Http} from "@angular/http";
 
 export class StartPageComponent implements OnInit{
     ngOnInit(): void {
-        this.http.get("/creature").toPromise().then(
+        this.http.get("/stack").toPromise().then(
             responce => {
                 this.creaturesChoice = responce.json()[0].map(creature => {
                     var creatureChoice : CreatureStack = new CreatureStack();

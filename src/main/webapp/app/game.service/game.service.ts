@@ -3,6 +3,7 @@ import {CreatureStack} from "../model/creatureStack";
 import {StompService} from "../stomp.service";
 import {BehaviorSubject, Observable} from "rxjs";
 import {Http} from "@angular/http"
+import {Cell} from "../model/Cell";
 
 @Injectable()
 export class GameService {
@@ -37,5 +38,9 @@ export class GameService {
 
     commandChain(): Observable<any> {
         return this.subject.asObservable();
+    }
+
+    sendMoveCreatureMessage(cell: Cell) {
+        this.stompService.send("/user/queue/game.move", cell);
     }
 }

@@ -10,10 +10,10 @@ import {FieldComponent} from "./field.component/field.component";
 import {MaterialModule} from "@angular/material";
 import {CreatureComponent} from "./creatures.component/creature.component";
 import {GameService} from "./game.service/game.service";
-import {CellComponent} from "./field_cell/cell.component";
 import {CreaturesQueueComponent} from "./creatures_queue/creatures_queue";
 import {CreatureStackComponent} from "./creature_stack.component/creature_stack.component";
 import {GameEngine} from "./game_engine/game_engine.service";
+import {CellComponent} from "./field_cell/cell.component";
 
 
 @NgModule({

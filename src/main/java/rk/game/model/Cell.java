@@ -6,10 +6,14 @@ import lombok.Data;
 public class Cell {
     private CreaturesStack stack;
     private boolean available = false;
-    private int x;
-    private int y;
+    public int x;
+    public int y;
 
-    Cell(int x, int y){
+    public Cell(){
+
+    }
+
+    public Cell(int x, int y){
         this.x = x;
         this.y = y;
     }
