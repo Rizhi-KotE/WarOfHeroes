@@ -11,6 +11,7 @@ import {RemoveCreatureCommand} from "../model/removeCreatureCommand";
 @Component({
     selector: "field",
     template: `
+<button (click)="placeCreatures()">Place Creatures</button>
 <table>
     <tr *ngFor="let line of matrix">
         <td *ngFor="let cell of line">
@@ -35,7 +36,7 @@ export class FieldComponent implements OnInit{
 
     matrix: Cell[][];
 
-    constructor(private gameEngine: GameEngine) {
+    constructor(private gameEngine: GameEngine, private gameService: GameService) {
         this.gameEngine.commandChain()
             .filter(command => typeof this[command.type] ===  "function")
             .subscribe(command =>this[command.type](command));
@@ -56,5 +57,9 @@ export class FieldComponent implements OnInit{
 
     chooseCell(message: Cell): void {
         this.gameEngine.chooseCell(message.clone());
+    }
+
+    placeCreatures(): void {
+        this.gameService.sendCreaturesPlacingMessage();
     }
 }

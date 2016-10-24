@@ -70,7 +70,7 @@ public class GameServer {
             AddCreatureCommand creatureCommand = new AddCreatureCommand();
             creatureCommand.setX(i);
             creatureCommand.setY(j);
-            creatureCommand.setStack(creature);
+            creatureCommand.setCreature(creature);
             list.add(creatureCommand);
             matrix[i][j].setStack(creature);
             i++;

@@ -7,6 +7,7 @@ import {NullCell} from "../model/nullCell";
 import {MoveCreatureCommand} from "../model/moveCreatureCommand";
 import {Command} from "../model/Command";
 import {AddCreatureCommand} from "../model/addCreauteCommand";
+import {StartPlacingCommand} from "../model/StartPlacingCommand";
 
 @Injectable()
 export class GameEngine {
@@ -43,6 +44,12 @@ export class GameEngine {
             .filter(command => typeof this[command.type] === "function")
             .subscribe(command => this[command.type](command));
         this.gameService.sendCreaturesPlacingMessage();
+    }
+
+    startPlacing(command: StartPlacingCommand){
+        command.list.forEach(command => {
+            this.commandChainSubject.next(command);
+        });
     }
 
     private setCreatures(creatures: CreatureStack[]) {
