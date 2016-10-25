@@ -5,11 +5,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class StartPlacingCommand {
+public class PlacingCommand {
     private final String type = "startPlacing";
-    private List<AddCreatureCommand> list;
+    private List<GetCreatureCommand> list;
 
-    public StartPlacingCommand(List<AddCreatureCommand> list) {
+    public PlacingCommand(List<GetCreatureCommand> list) {
         this.list = list;
     }
 }

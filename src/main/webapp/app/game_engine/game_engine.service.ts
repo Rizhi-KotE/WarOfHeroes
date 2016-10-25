@@ -46,6 +46,7 @@ export class GameEngine {
     }
 
     startPlacing(command: StartPlacingCommand){
+        this.commandChainSubject.next({type: "removeCreatures"} as Command);
         command.list.forEach(command => {
             this.commandChainSubject.next(command);
         });

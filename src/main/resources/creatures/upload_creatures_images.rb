@@ -1,7 +1,7 @@
 require "json"
 require "open-uri"
 
-file = open "haven_creatures.crt"
+file = open "inferno_creatures.crt"
 json = JSON::parse file.read
 
 domain = "http://heroes.ag.ru"

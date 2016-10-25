@@ -32,3 +32,6 @@ body {
 .cell.available{
     background: #ffb45c;
 }
+.cell.enemiesNeighbour{
+    background: #ff0000;
+}

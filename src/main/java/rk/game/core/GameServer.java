@@ -4,13 +4,14 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import rk.game.command.AddCreatureCommand;
+import rk.game.command.GetCreatureCommand;
 import rk.game.command.MoveCreatureCommand;
-import rk.game.command.StartPlacingCommand;
+import rk.game.command.PlacingCommand;
 import rk.game.controller.GameController;
 import rk.game.model.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("SpringJavaAutowiringInspection")
 @Data
@@ -40,9 +41,9 @@ public class GameServer {
     public void setPlayers(List<Player> players) {
         this.players = players;
         for (Player player : players) {
-            placingCreatures(player);
             queue.addAll(player.getCreatures());
         }
+        placeCreatures();
     }
 
     @Autowired
@@ -54,21 +55,16 @@ public class GameServer {
         }
     }
 
-    public StartPlacingCommand placingCreatures(Player player) {
-        int side = players.indexOf(player);
-        int j = 9 * (side % 2);
-        int i = 0;
-        List<AddCreatureCommand> list = new ArrayList<>(10);
-        for (CreaturesStack creature : player.getCreatures()) {
-            AddCreatureCommand creatureCommand = new AddCreatureCommand();
-            creatureCommand.setX(i);
-            creatureCommand.setY(j);
-            creatureCommand.setStack(creature);
-            list.add(creatureCommand);
-            field.addCreature(creature, i, j);
-            i++;
+    private void placeCreatures() {
+        for (Player player : players) {
+            int side = players.indexOf(player);
+            int j = 9 * (side % 2);
+            int i = 0;
+            for (CreaturesStack creature : player.getCreatures()) {
+                field.addCreature(creature, i, j);
+                i++;
+            }
         }
-        return new StartPlacingCommand(list);
     }
 
     public void userStep(Cell cell) {
@@ -91,5 +87,19 @@ public class GameServer {
         command.setInY(cell.y);
         command.setStack(stack);
         return command;
+    }
+
+    public List<GetCreatureCommand> getCreaturesPlaces(Player currentPlayer) {
+        Map<Player, List<GetCreatureCommand>> creatures = players.stream()
+                .collect(Collectors.toMap(player -> player, player ->
+                        player.getCreatures().stream()
+                                .map(stack -> {
+                                    Cell cell = field.getCell(stack);
+                                    GetCreatureCommand command = new GetCreatureCommand(stack, cell.x, cell.y);
+                                    command.setOwn(currentPlayer.equals(player));
+                                    return command;
+                                }).collect(Collectors.toList())
+                ));
+        return creatures.values().stream().flatMap(List::stream).collect(Collectors.toList());
     }
 }

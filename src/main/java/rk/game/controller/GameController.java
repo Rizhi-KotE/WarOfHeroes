@@ -5,15 +5,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import rk.game.command.AvailableCellsCommand;
+import rk.game.command.AvailableEnemiesCommand;
 import rk.game.command.MoveCreatureCommand;
-import rk.game.command.StartPlacingCommand;
+import rk.game.command.PlacingCommand;
 import rk.game.core.GameServer;
 import rk.game.core.GameServerDispatcher;
 import rk.game.model.Cell;
@@ -26,6 +25,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GameController {
@@ -48,18 +48,12 @@ public class GameController {
         return Arrays.asList(waitingGameQueueService.addPlayer(player));
     }
 
-    @RequestMapping(value = "/game/creatures")
-    public List<CreaturesStack> getCreatures(Principal principal){
-        GameServer server = dispatcher.getServer(principal.getName());
-        return server.getPlayer(principal.getName()).getCreatures();
-    }
-
     @MessageMapping(value = "/queue/game.creatures")
     @SendToUser(value = "/queue/game.message")
-    public StartPlacingCommand getCreaturesPlacing(Principal principal){
+    public PlacingCommand getCreaturesPlacing(Principal principal){
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
-        return server.placingCreatures(player);
+        return new PlacingCommand(server.getCreaturesPlaces(player));
     }
 
     @MessageMapping(value = "/queue/game.move")
@@ -71,13 +65,19 @@ public class GameController {
 
     @MessageMapping(value = "/queue/game.availableCells")
     @SendToUser(value = "/queue/game.message")
-    public AvailableCellsCommand getAvailableCells(Principal principal, @Payload Cell cell) throws IllegalFormatException {
+    public Object getAvailableCells(Principal principal, @Payload Cell cell) throws IllegalFormatException {
         GameServer server = dispatcher.getServer(principal.getName());
+        CreaturesStack currentCreature = server.getQueue().getCurrentCreature();
         if (cell.getStack() == null) {
-            cell = server.getField().getCell(server.getQueue().getCurrentCreature());
+            cell = server.getField().getCell(currentCreature);
         }
         List<Cell> cells = server.getField().getAvailableAria(cell.getStack());
-        return new AvailableCellsCommand(cell, cells);
+        AvailableCellsCommand availableCellsCommand = new AvailableCellsCommand(cell, cells);
+        Map<CreaturesStack, List<Cell>> availableEnemies = server.getField().getAvailableEnemies(cells);
+        availableEnemies.remove(currentCreature);
+        AvailableEnemiesCommand availableEnemiesCommand =
+                new AvailableEnemiesCommand(availableEnemies);
+        return Arrays.asList(availableCellsCommand, availableEnemiesCommand);
     }
 
     @RequestMapping(value = "/queue/game/step")

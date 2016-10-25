@@ -7,7 +7,7 @@ import {CreatureStack} from "./model/creatureStack";
     selector: "my-app",
     template: `
 <h1>War of Heroes</h1>
-<a routerLink="/field">field</a>
+<div routerLink="/field">field</div>
 <button (click)="startGame()">Start game</button>
 <router-outlet></router-outlet>`
 })

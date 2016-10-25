@@ -1,14 +1,28 @@
 import {CreatureStack} from "./creatureStack";
 import objectContaining = jasmine.objectContaining;
 export class Cell {
-    constructor(x: number, y:number){
+    stack: CreatureStack;
+    available: boolean;
+    enemiesNeighbour: boolean;
+    chosen: boolean;
+
+    x: number;
+    y: number;
+
+    constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
     }
-    stack: CreatureStack;
-    available: boolean;
-    x: number;
-    y: number;
+
+    clear(field?: string) {
+        if (field) {
+            this[field] = null;
+        } else {
+            this.available = false;
+            this.enemiesNeighbour = false;
+            this.chosen = false;
+        }
+    }
 
     clone() {
         var clone = Object.create(this);
