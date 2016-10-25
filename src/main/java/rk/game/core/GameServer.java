@@ -12,6 +12,7 @@ import rk.game.model.*;
 
 import java.util.*;
 
+@SuppressWarnings("SpringJavaAutowiringInspection")
 @Data
 @Service
 @Scope(value = "prototype")
@@ -28,7 +29,7 @@ public class GameServer {
     private CreaturesQueue queue;
 
     @Autowired
-    GameServer(CreaturesQueue queue){
+    public GameServer(CreaturesQueue queue){
         this.queue = queue;
     }
 
@@ -49,7 +50,7 @@ public class GameServer {
 
     public void startGame() {
         for (Player player : players) {
-            controller.startGame(player.getUsername(), Arrays.asList("start"));
+            controller.startGame(player.getUsername(), Arrays.asList("startRequest"));
         }
     }
 
@@ -82,6 +83,7 @@ public class GameServer {
         CreaturesStack stack = queue.getCurrentCreature();
         queue.popCreature();
         Cell currentCell = field.getCell(stack);
+        field.moveCreature(stack, cell);
         MoveCreatureCommand command = new MoveCreatureCommand();
         command.setOutX(currentCell.x);
         command.setOutY(currentCell.y);

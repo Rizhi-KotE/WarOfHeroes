@@ -17,8 +17,4 @@ public class Cell {
         this.x = x;
         this.y = y;
     }
-
-    public boolean isAvailable(){
-        return available && stack == null;
-    }
 }

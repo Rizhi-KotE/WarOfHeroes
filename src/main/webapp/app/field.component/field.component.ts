@@ -7,15 +7,17 @@ import {NullCell} from "../model/nullCell";
 import {MoveCreatureCommand} from "../model/moveCreatureCommand";
 import {AddCreatureCommand} from "../model/addCreauteCommand";
 import {RemoveCreatureCommand} from "../model/removeCreatureCommand";
+import {AvailableCellsCommand} from "../model/AvailableCellsCommand";
 
 @Component({
     selector: "field",
     template: `
 <button (click)="placeCreatures()">Place Creatures</button>
+<button (click)="sendAvailableCellsMessage()">Get Available cells</button>
 <table>
     <tr *ngFor="let line of matrix">
         <td *ngFor="let cell of line">
-        	<cell (click)="chooseCell(cell)" [cell]="cell"></cell>
+        	<cell (choose)="chooseCell($event)" [cell]="cell"></cell>
         </td>
     </tr>
 </table>`
@@ -59,7 +61,18 @@ export class FieldComponent implements OnInit{
         this.gameEngine.chooseCell(message.clone());
     }
 
+    availableCells(command: AvailableCellsCommand) {
+        this.matrix.forEach(line => line.forEach(
+            cell => cell.available = false
+        ));
+        command.cells.forEach(cell => this.matrix[cell.x][cell.y].available = true);
+    }
+
     placeCreatures(): void {
         this.gameService.sendCreaturesPlacingMessage();
+    }
+
+    sendAvailableCellsMessage(): void{
+        this.gameService.sendAvailableCellMessage({} as Cell);
     }
 }

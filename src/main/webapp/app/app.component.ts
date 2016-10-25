@@ -28,6 +28,6 @@ export class AppComponent {
                     return creatureChoice;
                 });
             })
-            .then(creaturesChoise=>this.gameService.start(creaturesChoise));
+            .then(creaturesChoise=>this.gameService.startRequest(creaturesChoise));
     }
 }

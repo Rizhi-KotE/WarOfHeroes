@@ -13,7 +13,7 @@ import {Http} from "@angular/http";
 
 export class StartPageComponent implements OnInit{
     ngOnInit(): void {
-        this.http.get("/stack").toPromise().then(
+        this.http.get("/creature").toPromise().then(
             responce => {
                 this.creaturesChoice = responce.json()[0].map(creature => {
                     var creatureChoice : CreatureStack = new CreatureStack();
@@ -34,7 +34,7 @@ export class StartPageComponent implements OnInit{
             }
             return result;
         }, new Array());
-        this.gameService.start(body).then(()=>this.router.navigate(["field"]));
+        this.gameService.startRequest(body).then(()=>this.router.navigate(["field"]));
     }
 
     constructor(private gameService: GameService, private router: Router, private http: Http) {}

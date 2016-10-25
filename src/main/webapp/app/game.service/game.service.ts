@@ -9,7 +9,7 @@ import {Cell} from "../model/Cell";
 export class GameService {
     subject: BehaviorSubject<any>;
 
-    start(creaturesChoice: CreatureStack): Promise<any> {
+    startRequest(creaturesChoice: CreatureStack): Promise<any> {
         return this.http.post("/game/start", creaturesChoice).map(responce => responce.json()).toPromise()
     }
 
@@ -34,6 +34,19 @@ export class GameService {
         this.stompService.subscribe("/user/queue/game*", result => {
             this.subject.next(JSON.parse(result.body));
         });
+        this.subject.filter(command => command).subscribe(command => {
+            if(command instanceof Array){
+                (command as Array<any>).forEach(command => this.subject.next(command));
+            }else if(command.type && typeof this[command.type] === "function"){
+                this[command.type](command);
+            }else if(typeof command === "string" && typeof this[command] === "function"){
+                this[command](command);
+            }
+        })
+    }
+
+    start(signal: string): void{
+        this.sendCreaturesPlacingMessage();
     }
 
     commandChain(): Observable<any> {
@@ -42,5 +55,9 @@ export class GameService {
 
     sendMoveCreatureMessage(cell: Cell) {
         this.stompService.send("/user/queue/game.move", cell);
+    }
+
+    sendAvailableCellMessage(cell: Cell){
+        this.stompService.send("/user/queue/game.availableCells", cell);
     }
 }

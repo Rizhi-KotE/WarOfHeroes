@@ -28,3 +28,7 @@ body {
     border-style: solid;
     border-color: #ff0099;
 }
+
+.cell.available{
+    background: #ffb45c;
+}

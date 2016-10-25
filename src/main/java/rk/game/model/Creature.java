@@ -9,6 +9,7 @@ public class Creature {
     private int defence;
     private String damage;
     private int shoots;
+    private int speed;
     private int health;
     private int mana;
     private String image;

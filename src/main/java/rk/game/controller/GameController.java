@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import rk.game.command.AvailableCellsCommand;
 import rk.game.command.MoveCreatureCommand;
 import rk.game.command.StartPlacingCommand;
 import rk.game.core.GameServer;
@@ -23,6 +24,7 @@ import rk.game.model.Player;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.IllegalFormatException;
 import java.util.List;
 
 @RestController
@@ -62,9 +64,20 @@ public class GameController {
 
     @MessageMapping(value = "/queue/game.move")
     @SendToUser(value = "/queue/game.message")
-    public MoveCreatureCommand MoveCreature(Principal principal, Cell cell){
+    public MoveCreatureCommand MoveCreature(Principal principal, @Payload Cell cell){
         GameServer server = dispatcher.getServer(principal.getName());
         return server.makeStep(principal.getName(), cell);
+    }
+
+    @MessageMapping(value = "/queue/game.availableCells")
+    @SendToUser(value = "/queue/game.message")
+    public AvailableCellsCommand getAvailableCells(Principal principal, @Payload Cell cell) throws IllegalFormatException {
+        GameServer server = dispatcher.getServer(principal.getName());
+        if (cell.getStack() == null) {
+            cell = server.getField().getCell(server.getQueue().getCurrentCreature());
+        }
+        List<Cell> cells = server.getField().getAvailableAria(cell.getStack());
+        return new AvailableCellsCommand(cell, cells);
     }
 
     @RequestMapping(value = "/queue/game/step")
