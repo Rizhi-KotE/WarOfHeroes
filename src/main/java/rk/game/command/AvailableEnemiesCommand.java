@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
-public class AvailableEnemiesCommand {
+public class AvailableEnemiesCommand implements Command{
     private final String type = "availableEnemies";
 
     List<Pair<CreaturesStack, List<Cell>>> enemiesToCell;

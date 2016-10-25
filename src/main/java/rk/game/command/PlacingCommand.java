@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PlacingCommand {
+public class PlacingCommand implements Command{
     private final String type = "startPlacing";
     private List<GetCreatureCommand> list;
 

@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import rk.game.command.AvailableCellsCommand;
-import rk.game.command.AvailableEnemiesCommand;
-import rk.game.command.MoveCreatureCommand;
-import rk.game.command.PlacingCommand;
+import rk.game.command.*;
 import rk.game.core.GameServer;
 import rk.game.core.GameServerDispatcher;
+import rk.game.dto.AttackMessage;
 import rk.game.model.Cell;
 import rk.game.model.CreaturesStack;
 import rk.game.core.WaitingGameQueueService;
@@ -60,7 +58,17 @@ public class GameController {
     @SendToUser(value = "/queue/game.message")
     public MoveCreatureCommand MoveCreature(Principal principal, @Payload Cell cell){
         GameServer server = dispatcher.getServer(principal.getName());
-        return server.makeStep(principal.getName(), cell);
+        Player player = dispatcher.getPlayer(principal.getName());
+        return server.makeStep(player, cell);
+    }
+
+    @MessageMapping(value = "/queue/game.attack")
+    public void attackCreature(Principal principal, AttackMessage message) {
+        GameServer server = dispatcher.getServer(principal.getName());
+        Player player = dispatcher.getPlayer(principal.getName());
+        Map<Player, List<Command>> messages = server.attack(player, message);
+        messages.forEach((p, commands) ->
+                template.convertAndSendToUser(p.getUsername(), "/queue/game.message", commands));
     }
 
     @MessageMapping(value = "/queue/game.availableCells")

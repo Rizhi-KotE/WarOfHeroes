@@ -5,7 +5,7 @@ import rk.game.model.Cell;
 import rk.game.model.CreaturesStack;
 
 @Data
-public class MoveCreatureCommand {
+public class MoveCreatureCommand implements Command{
     private final String type = "moveCreature";
     private int inX;
     private int inY;

@@ -80,6 +80,10 @@ public class Field {
         return creatures.get(stack);
     }
 
+    public Cell getCell(int x, int y){
+        return matrix[x][y];
+    }
+
     public void moveCreature(CreaturesStack stack, Cell cell){
         Cell outputCell = creatures.get(stack);
         outputCell.setStack(null);

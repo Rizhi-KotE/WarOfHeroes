@@ -4,6 +4,7 @@ import {StompService} from "../stomp.service";
 import {BehaviorSubject, Observable} from "rxjs";
 import {Http} from "@angular/http"
 import {Cell} from "../model/Cell";
+import {AttackMessage} from "../model/AttackMessage";
 
 @Injectable()
 export class GameService {
@@ -59,5 +60,9 @@ export class GameService {
 
     sendAvailableCellMessage(cell: Cell){
         this.stompService.send("/user/queue/game.availableCells", cell);
+    }
+
+    sendAttackMessage(message: AttackMessage) {
+        this.stompService.send("/user/queue/game.attack", message);
     }
 }

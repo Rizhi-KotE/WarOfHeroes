@@ -21,11 +21,11 @@ public class FieldTest {
     public void onStart() {
         Creature creature = new Creature();
         creature.setSpeed(2);
-        stack = new CreaturesStack();
+        stack = new CreaturesStack(null, 2);
         stack.setCreature(creature);
         field.addCreature(stack, 5, 5);
 
-        CreaturesStack enemy = new CreaturesStack();
+        CreaturesStack enemy = new CreaturesStack(null, 2);
         field.addCreature(enemy, 7, 5);
     }
 

@@ -4,7 +4,7 @@ import lombok.Data;
 import rk.game.model.CreaturesStack;
 
 @Data
-public class GetCreatureCommand {
+public class GetCreatureCommand implements Command {
     private final String type = "addCreature";
     private int x;
     private int y;

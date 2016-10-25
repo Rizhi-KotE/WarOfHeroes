@@ -8,6 +8,7 @@ import {MoveCreatureCommand} from "../model/moveCreatureCommand";
 import {Command} from "../model/Command";
 import {AddCreatureCommand} from "../model/addCreauteCommand";
 import {StartPlacingCommand} from "../model/StartPlacingCommand";
+import {AttackMessage} from "../model/AttackMessage";
 
 @Injectable()
 export class GameEngine {
@@ -54,5 +55,9 @@ export class GameEngine {
 
     private setCreatures(creatures: CreatureStack[]) {
         this.creaturesListObservable.next(creatures);
+    }
+
+    sendAtackMessage(message: AttackMessage) {
+        this.gameService.sendAttackMessage(message);
     }
 }

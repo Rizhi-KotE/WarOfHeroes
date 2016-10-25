@@ -8,12 +8,20 @@ public class CreaturesStack {
     private Creature creature;
     private int size;
 
-    public CreaturesStack(Creature creature, int i) {
-        this.creature = creature;
-        this.size = i;
+    private int health;
+
+    public void changeHealth(int delta) {
+        health += delta;
+        size = health / creature.getHealth() + health % creature.getHealth() == 0 ? 0 : 1;
     }
 
     public CreaturesStack() {
 
+    }
+
+    public CreaturesStack(Creature creature, int i) {
+        this.creature = creature;
+        this.size = i;
+        health = creature.getHealth() * i;
     }
 }

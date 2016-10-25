@@ -6,7 +6,7 @@ import rk.game.model.Cell;
 import java.util.List;
 
 @Data
-public class AvailableCellsCommand {
+public class AvailableCellsCommand implements Command{
     private final String type = "availableCells";
 
     private List<Cell> cells;

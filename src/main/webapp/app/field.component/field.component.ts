@@ -7,6 +7,7 @@ import {AddCreatureCommand} from "../model/addCreauteCommand";
 import {RemoveCreatureCommand} from "../model/removeCreatureCommand";
 import {AvailableCellsCommand} from "../model/AvailableCellsCommand";
 import {AvailableEnemiesCommand} from "../model/AvailableEnemiesCommand";
+import {AttackMessage} from "../model/AttackMessage";
 
 @Component({
     selector: "field",
@@ -61,8 +62,13 @@ export class FieldComponent implements OnInit{
         this.matrix[command.x][command.y].stack = null;
     }
 
-    chooseCell(message: Cell): void {
-        this.gameEngine.chooseCell(message.clone());
+    chooseCell(cell: Cell): void {
+        if (cell.stack) {
+            var message = new AttackMessage(this.currentCell, cell);
+            this.gameEngine.sendAtackMessage(message);
+        } else {
+            this.gameService.sendMoveCreatureMessage(cell);
+        }
     }
 
     availableCells(command: AvailableCellsCommand) {
