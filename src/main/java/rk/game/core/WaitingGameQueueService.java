@@ -29,7 +29,7 @@ public class WaitingGameQueueService {
         }
         List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), addWhippingBoy());
         dispatcher.runGame(playersToNewGame);
-        return "game_start";
+        return "gameStart";
     }
 
     @Autowired

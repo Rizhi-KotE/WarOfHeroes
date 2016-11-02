@@ -39,9 +39,8 @@ export class GameEngine {
             .subscribe(command => {
                 if (typeof this[command.type] === "function") {
                     this[command.type](command)
-                } else {
-                    this.commandChainSubject.next(command);
                 }
+                this.commandChainSubject.next(command);
             });
         this.gameService.sendCreaturesPlacingMessage();
     }

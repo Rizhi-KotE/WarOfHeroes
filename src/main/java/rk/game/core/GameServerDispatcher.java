@@ -34,8 +34,4 @@ public class GameServerDispatcher {
     public Player getPlayer(String username) {
         return players.get(username);
     }
-
-    public void userStep(String name, Cell cell) {
-        map.get(name).userStep(cell);
-    }
 }

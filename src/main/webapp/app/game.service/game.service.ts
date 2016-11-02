@@ -10,8 +10,8 @@ import {AttackMessage} from "../model/AttackMessage";
 export class GameService {
     subject: BehaviorSubject<any>;
 
-    startRequest(creaturesChoice: CreatureStack): Promise<any> {
-        return this.http.post("/game/start", creaturesChoice).map(responce => responce.json()).toPromise()
+    startMessage(creaturesChoice: CreatureStack): Promise<any> {
+        return this.http.post("/game/start", creaturesChoice).map(body => body.json()).toPromise();
     }
 
     subscribe(destination: string) {
@@ -46,7 +46,7 @@ export class GameService {
         })
     }
 
-    start(signal: string): void{
+    startGame(signal: string): void{
         this.sendCreaturesPlacingMessage();
     }
 

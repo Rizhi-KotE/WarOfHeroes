@@ -18,7 +18,7 @@ body {
     border-width: 1px;
     border-style: solid;
     border-color: #ffff99;
-    background: #fc0;
+    /*background: #fc0;*/
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     padding: 10px;
 }

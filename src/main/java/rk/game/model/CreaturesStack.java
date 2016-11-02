@@ -1,9 +1,14 @@
 package rk.game.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import rk.game.model.Creature;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = "health")
 public class CreaturesStack {
     private Creature creature;
     private int size;

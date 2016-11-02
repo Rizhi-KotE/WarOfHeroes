@@ -10,10 +10,20 @@ export class StompService {
         this.stompClientPromise = new Promise((resolve, reject)=> {
             var ws = new SockJS("/game/connect");
             var stompClient = Stomp.over(ws);
+            var numbers = 5;
+            this.connectToSocket(stompClient)
+                .then(client => resolve(client))
+                .catch(()=>this.connectToSocket(stompClient
+                    .then(client=>resolve(client))))
+        })
+    }
+
+    connectToSocket(stompClient: any): Promise<any> {
+        return new Promise((resolve, reject)=> {
             stompClient.connect({}, frame => {
                 console.log(frame);
                 resolve(stompClient);
-            });
+            }, frame=> reject());
         })
     }
 

@@ -109,27 +109,27 @@ export class FieldComponent implements OnInit{
     }
 
     chooseTarget(mouseEvent: MouseEvent, cell: Cell) {
-        this.clearMatrix("chosen");
-        if (cell.stack) {
-            var width = mouseEvent.srcElement.clientWidth;
-            var height = mouseEvent.srcElement.clientHeight;
-            var x = mouseEvent.offsetX;
-            var y = mouseEvent.offsetY;
-
-            var horizontalPart = this.calcCoordinateDelta(x / (width / 3) - 1);
-            var verticalPart = this.calcCoordinateDelta(y / (height / 3) - 1);
-            var matrixXCoordinate = cell.x + horizontalPart;
-            var matrixYCoordinate = cell.y + verticalPart;
-            if (matrixXCoordinate >= 0 && matrixXCoordinate < 10 && matrixYCoordinate >= 0 && matrixYCoordinate < 10)
-                if (this.matrix[matrixXCoordinate][matrixYCoordinate].enemiesNeighbour) {
-                    this.chosenCell = this.matrix[matrixXCoordinate][matrixYCoordinate]
-                    this.chosenCell.chosen = true;
-                } else {
-                    x = cell.x + this.calcCoordinateDelta(this.currentCell.x, cell.x);
-                    y = cell.y + this.calcCoordinateDelta(this.currentCell.y, cell.y);
-                    this.chosenCell = this.matrix[x][y]
-                    this.chosenCell.chosen = true;
-                }
-        }
+        // this.clearMatrix("chosen");
+        // if (cell.stack) {
+        //     var width = mouseEvent.srcElement.clientWidth;
+        //     var height = mouseEvent.srcElement.clientHeight;
+        //     var x = mouseEvent.offsetX;
+        //     var y = mouseEvent.offsetY;
+        //
+        //     var horizontalPart = this.calcCoordinateDelta(x / (width / 3) - 1);
+        //     var verticalPart = this.calcCoordinateDelta(y / (height / 3) - 1);
+        //     var matrixXCoordinate = cell.x + horizontalPart;
+        //     var matrixYCoordinate = cell.y + verticalPart;
+        //     if (matrixXCoordinate >= 0 && matrixXCoordinate < 10 && matrixYCoordinate >= 0 && matrixYCoordinate < 10)
+        //         if (this.matrix[matrixXCoordinate][matrixYCoordinate].enemiesNeighbour) {
+        //             this.chosenCell = this.matrix[matrixXCoordinate][matrixYCoordinate]
+        //             this.chosenCell.chosen = true;
+        //         } else {
+        //             x = cell.x + this.calcCoordinateDelta(this.currentCell.x, cell.x);
+        //             y = cell.y + this.calcCoordinateDelta(this.currentCell.y, cell.y);
+        //             this.chosenCell = this.matrix[x][y]
+        //             this.chosenCell.chosen = true;
+        //         }
+        // }
     }
 }

@@ -13,6 +13,7 @@ import rk.game.command.*;
 import rk.game.core.GameServer;
 import rk.game.core.GameServerDispatcher;
 import rk.game.dto.AttackMessage;
+import rk.game.dto.CreatureChoise;
 import rk.game.model.Cell;
 import rk.game.model.CreaturesStack;
 import rk.game.core.WaitingGameQueueService;
@@ -20,10 +21,8 @@ import rk.game.model.Player;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.IllegalFormatException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class GameController {
@@ -38,7 +37,7 @@ public class GameController {
     private SimpMessagingTemplate template;
 
     @RequestMapping(value = "/game/start", method = RequestMethod.POST)
-    public List<String> gameStart(Principal p, @RequestBody @Valid List<CreaturesStack> creatureChoice) {
+    public List<String> gameStart(Principal p, @RequestBody @Valid ArrayList<CreaturesStack> creatureChoice) {
         String username = p.getName();
         Player player = new Player();
         player.setUsername(username);
@@ -48,10 +47,13 @@ public class GameController {
 
     @MessageMapping(value = "/queue/game.creatures")
     @SendToUser(value = "/queue/game.message")
-    public PlacingCommand getCreaturesPlacing(Principal principal){
+    public List<Command> getCreaturesPlacing(Principal principal) {
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
-        return new PlacingCommand(server.getCreaturesPlaces(player));
+        List<Command> commands = new ArrayList<>();
+        commands.add(new PlacingCommand(server.getCreaturesPlaces(player)));
+        commands.addAll(server.getAvailableCells());
+        return commands;
     }
 
     @MessageMapping(value = "/queue/game.move")
@@ -75,30 +77,12 @@ public class GameController {
     @SendToUser(value = "/queue/game.message")
     public Object getAvailableCells(Principal principal, @Payload Cell cell) throws IllegalFormatException {
         GameServer server = dispatcher.getServer(principal.getName());
-        CreaturesStack currentCreature = server.getQueue().getCurrentCreature();
-        if (cell.getStack() == null) {
-            cell = server.getField().getCell(currentCreature);
+        Player player = dispatcher.getPlayer(principal.getName());
+        if (cell == null) {
+            return server.getAvailableCells();
+        } else {
+            return server.getAvailableCells(cell);
         }
-        List<Cell> cells = server.getField().getAvailableAria(cell.getStack());
-        AvailableCellsCommand availableCellsCommand = new AvailableCellsCommand(cell, cells);
-        Map<CreaturesStack, List<Cell>> availableEnemies = server.getField().getAvailableEnemies(cells);
-        availableEnemies.remove(currentCreature);
-        AvailableEnemiesCommand availableEnemiesCommand =
-                new AvailableEnemiesCommand(availableEnemies);
-        return Arrays.asList(availableCellsCommand, availableEnemiesCommand);
-    }
-
-    @RequestMapping(value = "/queue/game/step")
-    public void userStep(Principal p, @RequestBody Cell cell){
-        dispatcher.userStep(p.getName(), cell);
-    }
-
-    public void startGame(String username, Object message){
-        template.convertAndSendToUser(username, "/queue/game.run", message);
-    }
-
-    public void gameAnswer(Player player, Cell cell) {
-        template.convertAndSendToUser(player.getUsername(), "/queue/game.answer", cell);
     }
 
     public void sendMessage(Player player, Object message){

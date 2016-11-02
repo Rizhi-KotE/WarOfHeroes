@@ -4,10 +4,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import rk.game.command.Command;
-import rk.game.command.DamageCommand;
-import rk.game.command.GetCreatureCommand;
-import rk.game.command.MoveCreatureCommand;
+import rk.game.command.*;
 import rk.game.controller.GameController;
 import rk.game.dto.AttackMessage;
 import rk.game.model.*;
@@ -15,7 +12,6 @@ import rk.game.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("SpringJavaAutowiringInspection")
 @Data
 @Service
 @Scope(value = "prototype")
@@ -55,7 +51,7 @@ public class GameServer {
 
     public void startGame() {
         for (Player player : players) {
-            controller.startGame(player.getUsername(), Arrays.asList("startRequest"));
+            controller.sendMessage(player, Arrays.asList("startGame"));
         }
     }
 
@@ -69,10 +65,6 @@ public class GameServer {
                 i++;
             }
         }
-    }
-
-    public void userStep(Cell cell) {
-        controller.gameAnswer(getCurrentPlayer(), cell);
     }
 
     public Player getPlayer(String name) {
@@ -107,9 +99,8 @@ public class GameServer {
         return pureDamage + (int) (pureDamage * coef);
     }
 
-    public DamageCommand damageCreature(AttackMessage message) {
-        Cell attackingCell = field.getCell(message.getAttackCell().x, message.getAttackCell().y);
-        Cell targetCell = field.getCell(message.getTargetCell().x, message.getTargetCell().y);
+    public DamageCommand damageCreature(CreaturesStack stack, Cell targetCell) {
+        Cell attackingCell = field.getCell(stack);
         int damage = calcDamage(attackingCell.getStack(), targetCell.getStack());
         targetCell.getStack().changeHealth(-damage);
 
@@ -120,9 +111,29 @@ public class GameServer {
         if (!getCurrentPlayer().equals(player))
             throw new IllegalAccessError("не твой ход");
         List<Command> list = new ArrayList<>();
-        list.add(makeStep(player, message.getAttackCell()));
-        list.add(damageCreature(message));
+        MoveCreatureCommand moveCommand = makeStep(player, message.getAttackCell());
+        list.add(moveCommand);
+        list.add(damageCreature(moveCommand.getStack(), field.getCell(moveCommand.getInX(), moveCommand.getInY())));
         return players.stream().collect(Collectors.toMap(p -> p, p -> list));
+    }
+
+    public List<Command> getAvailableCells() {
+        CreaturesStack creaturesStack = queue.getCurrentCreature();
+        Cell cell = field.getCell(creaturesStack);
+        return getAvailableCells(cell);
+    }
+
+    public List<Command> getAvailableCells(Cell target) {
+        Cell cell = field.getCell(target.x, target.y);
+        if (cell.getStack() == null) {
+            return new ArrayList<>();
+        }
+        List<Cell> cells = field.getAvailableAria(cell.getStack());
+        AvailableCellsCommand availableCellsCommand = new AvailableCellsCommand(target, cells);
+        Map<CreaturesStack, List<Cell>> availableEnemies = field.getAvailableEnemies(cells);
+        AvailableEnemiesCommand availableEnemiesCommand =
+                new AvailableEnemiesCommand(availableEnemies);
+        return Arrays.asList(availableCellsCommand, availableEnemiesCommand);
     }
 
     public Player getCurrentPlayer() {

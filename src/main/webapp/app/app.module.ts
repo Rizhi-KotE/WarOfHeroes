@@ -37,7 +37,7 @@ import {CellComponent} from "./field_cell/cell.component";
             {
                 useHash: true
             }),
-        MaterialModule.forRoot()
+        MaterialModule.forRoot(),
     ],
     providers: [
         WebSocketService,
@@ -52,7 +52,7 @@ import {CellComponent} from "./field_cell/cell.component";
         CreatureComponent,
         CellComponent,
         CreaturesQueueComponent,
-        CreatureStackComponent
+        CreatureStackComponent,
     ],
     bootstrap: [AppComponent]
 })
