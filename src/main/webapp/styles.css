@@ -35,3 +35,9 @@ body {
 .cell.enemiesNeighbour{
     background: #ff0000;
 }
+.cell.highlited{
+    background: #fff71f;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ff0099;
+}

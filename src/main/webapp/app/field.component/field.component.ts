@@ -37,6 +37,7 @@ export class FieldComponent implements OnInit{
             }
             this.matrix.push(line);
         }
+        this.gameService.sendCreaturesPlacingMessage();
     }
 
     matrix: Cell[][];
@@ -98,7 +99,7 @@ export class FieldComponent implements OnInit{
     }
 
     sendAvailableCellsMessage(): void{
-        this.gameService.sendAvailableCellMessage({} as Cell);
+        this.gameService.sendAvailableCellMessage();
     }
 
     private calcCoordinateDelta(delta: number, second?: number) {

@@ -29,4 +29,8 @@ public class CreaturesStack {
         this.size = i;
         health = creature.getHealth() * i;
     }
+
+    public boolean isAlive() {
+        return size > 0;
+    }
 }

@@ -55,14 +55,21 @@ export class GameService {
     }
 
     sendMoveCreatureMessage(cell: Cell) {
-        this.stompService.send("/user/queue/game.move", cell);
+        this.stompService.send("/user/queue/game.moveMessage", cell);
     }
 
-    sendAvailableCellMessage(cell: Cell){
-        this.stompService.send("/user/queue/game.availableCells", cell);
+    sendWaitMessage():void{
+        this.stompService.send("/user/queue/game.waitMessage");
+    }
+
+    sendAvailableCellMessage(cell?: Cell){
+        if(cell)
+            this.stompService.send("/user/queue/game.availableCells", cell);
+        else
+            this.stompService.send("/user/queue/game.currentAvailableCells")
     }
 
     sendAttackMessage(message: AttackMessage) {
-        this.stompService.send("/user/queue/game.attack", message);
+        this.stompService.send("/user/queue/game.attackMessage", message);
     }
 }

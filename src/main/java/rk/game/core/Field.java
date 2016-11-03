@@ -1,9 +1,11 @@
-package rk.game.model;
+package rk.game.core;
 
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import javafx.util.Pair;
 import lombok.Data;
 import org.springframework.stereotype.Component;
+import rk.game.model.Cell;
+import rk.game.model.CreaturesStack;
 
 import java.awt.*;
 import java.util.*;

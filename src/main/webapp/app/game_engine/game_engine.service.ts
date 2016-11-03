@@ -42,7 +42,6 @@ export class GameEngine {
                 }
                 this.commandChainSubject.next(command);
             });
-        this.gameService.sendCreaturesPlacingMessage();
     }
 
     startPlacing(command: StartPlacingCommand){

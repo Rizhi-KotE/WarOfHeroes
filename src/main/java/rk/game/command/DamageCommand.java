@@ -6,6 +6,8 @@ import rk.game.model.CreaturesStack;
 
 @Data
 public class DamageCommand implements Command {
+    private final String type = "damage";
+
     private Cell currentCell;
     private Cell targetCell;
     private int damage;
