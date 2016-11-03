@@ -14,13 +14,13 @@ import {AttackMessage} from "../model/AttackMessage";
     template: `
 <button (click)="placeCreatures()">Place Creatures</button>
 <button (click)="sendAvailableCellsMessage()">Get Available cells</button>
+<button (click)="sendWaitMessage()">Wait</button>
 <div style="position: relative">
     <div *ngFor="let line of matrix">
         <div *ngFor="let cell of line">
         	<cell 
         	(choose)="chooseCell($event)" 
-        	[cell]="cell"
-        	(mousemove)="chooseTarget($event, cell)"></cell>
+        	[cell]="cell"></cell>
         </div>
     </div>
 </div>`
@@ -90,8 +90,8 @@ export class FieldComponent implements OnInit{
 
     availableEnemies(command: AvailableEnemiesCommand) {
         this.clearMatrix("enemiesNeighbour")
-        command.enemiesToCell.forEach(cells=>cells.value.forEach(
-            cell => this.matrix[cell.x][cell.y].enemiesNeighbour = true));
+        command.availableEnemies
+            .forEach(cell=>this.matrix[cell.x][cell.y].availableEnemy = true);
     }
 
     placeCreatures(): void {
@@ -102,6 +102,10 @@ export class FieldComponent implements OnInit{
         this.gameService.sendAvailableCellMessage();
     }
 
+    sendWaitMessage(): void {
+        this.gameService.sendWaitMessage();
+    }
+
     private calcCoordinateDelta(delta: number, second?: number) {
         if (second) {
             var delta = delta - second;
@@ -109,28 +113,4 @@ export class FieldComponent implements OnInit{
         return delta ? delta < 0 ? -1 : 1 : 0;
     }
 
-    chooseTarget(mouseEvent: MouseEvent, cell: Cell) {
-        // this.clearMatrix("chosen");
-        // if (cell.stack) {
-        //     var width = mouseEvent.srcElement.clientWidth;
-        //     var height = mouseEvent.srcElement.clientHeight;
-        //     var x = mouseEvent.offsetX;
-        //     var y = mouseEvent.offsetY;
-        //
-        //     var horizontalPart = this.calcCoordinateDelta(x / (width / 3) - 1);
-        //     var verticalPart = this.calcCoordinateDelta(y / (height / 3) - 1);
-        //     var matrixXCoordinate = cell.x + horizontalPart;
-        //     var matrixYCoordinate = cell.y + verticalPart;
-        //     if (matrixXCoordinate >= 0 && matrixXCoordinate < 10 && matrixYCoordinate >= 0 && matrixYCoordinate < 10)
-        //         if (this.matrix[matrixXCoordinate][matrixYCoordinate].enemiesNeighbour) {
-        //             this.chosenCell = this.matrix[matrixXCoordinate][matrixYCoordinate]
-        //             this.chosenCell.chosen = true;
-        //         } else {
-        //             x = cell.x + this.calcCoordinateDelta(this.currentCell.x, cell.x);
-        //             y = cell.y + this.calcCoordinateDelta(this.currentCell.y, cell.y);
-        //             this.chosenCell = this.matrix[x][y]
-        //             this.chosenCell.chosen = true;
-        //         }
-        // }
-    }
 }

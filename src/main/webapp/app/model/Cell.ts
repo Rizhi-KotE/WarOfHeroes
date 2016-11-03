@@ -3,7 +3,7 @@ import objectContaining = jasmine.objectContaining;
 export class Cell {
     stack: CreatureStack;
     available: boolean;
-    enemiesNeighbour: boolean;
+    availableEnemy: boolean;
     chosen: boolean;
 
     x: number;
@@ -19,7 +19,7 @@ export class Cell {
             this[field] = null;
         } else {
             this.available = false;
-            this.enemiesNeighbour = false;
+            this.availableEnemy = false;
             this.chosen = false;
         }
     }

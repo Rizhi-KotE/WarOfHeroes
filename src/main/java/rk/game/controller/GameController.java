@@ -19,7 +19,6 @@ import rk.game.core.WaitingGameQueueService;
 import rk.game.model.Player;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
 import java.security.Principal;
 import java.util.*;
 
@@ -51,7 +50,8 @@ public class GameController {
         Player player = dispatcher.getPlayer(principal.getName());
         List<Command> commands = new ArrayList<>();
         commands.add(new PlacingCommand(server.getCreaturesPlaces(player)));
-        commands.addAll(server.getAvailableCells());
+        commands.add(server.getAvailableCellsCommand());
+        commands.add(server.getAvailableCellsCommand());
         return commands;
     }
 
@@ -60,7 +60,7 @@ public class GameController {
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
         Map<Player, List<Command>> messages = server.messageMove(cell);
-        messages.forEach((p, commands) -> sendMessage(player, commands));
+        messages.forEach((p, commands) -> sendMessage(p, commands));
     }
 
     @MessageMapping(value = "/queue/game.attackMessage")
@@ -68,7 +68,7 @@ public class GameController {
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
         Map<Player, List<Command>> messages = server.messageAttack(message);
-        messages.forEach((p, commands) -> sendMessage(player, commands));
+        messages.forEach((p, commands) -> sendMessage(p, commands));
     }
 
     @MessageMapping(value = "/queue/game.waitMessage")
@@ -76,21 +76,21 @@ public class GameController {
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
         Map<Player, List<Command>> messages = server.messageWait();
-        messages.forEach((p, commands) -> sendMessage(player, commands));
+        messages.forEach((p, commands) -> sendMessage(p, commands));
     }
 
     @MessageMapping(value = "/queue/game.availableCells")
     @SendToUser(value = "/queue/game.message")
     public Object getAvailableCells(Principal principal, Cell cell){
         GameServer server = dispatcher.getServer(principal.getName());
-        return server.getAvailableCells(cell);
+        return server.getAvailableCellsCommand(cell);
     }
 
     @MessageMapping(value = "queue/game.currentAvailableCells")
     @SendToUser(value = "/queue/game.message")
     public Object getCurrentAvailableCells(Principal principal) {
         GameServer server = dispatcher.getServer(principal.getName());
-        return server.getAvailableCells();
+        return server.getAvailableCellsCommand();
     }
 
     public void sendMessage(Player player, Object message){

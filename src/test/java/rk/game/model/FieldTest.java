@@ -40,9 +40,9 @@ public class FieldTest {
     * get all available creatures(reflective)*/
     public void getAvailableEnemies() throws Exception {
         List<Cell> cells = field.getAvailableAria(stack);
-        Map<CreaturesStack, List<Cell>> map = field.getAvailableEnemies(cells);
-        printMatrix(map.values().stream().flatMap(List::stream).collect(Collectors.toList()));
-        assertEquals(map.size(), 2);
+        List<Cell> list = field.getAvailableEnemies(cells);
+        printMatrix(list);
+        assertEquals(list.size(), 2);
     }
 
     private void printMatrix(List<Cell> cells) throws JsonProcessingException {

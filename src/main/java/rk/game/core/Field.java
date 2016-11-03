@@ -1,7 +1,6 @@
 package rk.game.core;
 
 import gnu.trove.map.hash.TObjectDoubleHashMap;
-import javafx.util.Pair;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import rk.game.model.Cell;
@@ -10,6 +9,7 @@ import rk.game.model.CreaturesStack;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Data
@@ -17,7 +17,18 @@ import java.util.stream.Collectors;
 public class Field {
 
     enum AvailableCell {
-        withCreature, withoutCreature
+        withCreature(cell -> cell.getStack() != null),
+        withoutCreature(cell -> cell.getStack() == null);
+
+        private Predicate<Cell> predicate;
+
+        public boolean test(Cell cell) {
+            return predicate.test(cell);
+        }
+
+        AvailableCell(Predicate<Cell> predicate) {
+            this.predicate = predicate;
+        }
     }
 
     public static final int SIZE = 10;
@@ -71,7 +82,7 @@ public class Field {
             int x = cell.x + deltaX;
             int y = cell.y + deltaY;
             if (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
-                if (matrix[x][y].getStack() == null || flag == AvailableCell.withCreature)
+                if (flag.test(matrix[x][y]))
                     out.add(matrix[x][y]);
             }
         }
@@ -102,29 +113,17 @@ public class Field {
         creatures.put(stack, inputCell);
     }
 
-    public Map<CreaturesStack, List<Cell>> getAvailableEnemies(CreaturesStack creature) {
+    public List<Cell> getAvailableEnemies(CreaturesStack creature) {
         List<Cell> cells = getAvailableAria(creature);
         return getAvailableEnemies(cells);
     }
 
-    public Map<CreaturesStack, List<Cell>> getAvailableEnemies(List<Cell> cells) {
-        HashMap<CreaturesStack, Set<Cell>> availableEnemies = new HashMap<>();
-        for (Cell cell : cells) {
-            List<Cell> neighbours = getNeighbourCells(cell, AvailableCell.withCreature);
-            for (Cell neighbor : neighbours) {
-                if (neighbor.getStack() != null) {
-                    Set<Cell> cellSet = availableEnemies.get(neighbor.getStack());
-                    if (cellSet == null) {
-                        cellSet = new HashSet<>();
-                    }
-                    cellSet.add(cell);
-                    availableEnemies.put(neighbor.getStack(), cellSet);
-                }
-            }
-        }
-        return availableEnemies.entrySet()
-                .stream()
-                .collect(Collectors.toMap(t -> t.getKey(), t -> t.getValue().stream().collect(Collectors.toList())));
+    public List<Cell> getAvailableEnemies(List<Cell> cells) {
+        return cells.stream()
+                .map(cell -> getNeighbourCells(cell, AvailableCell.withCreature))
+                .flatMap(List::stream)
+                .collect(Collectors.toSet())
+                .stream().collect(Collectors.toList());
     }
 
     public void removeCreature(CreaturesStack stack){

@@ -15,12 +15,9 @@ import java.util.stream.Stream;
 public class AvailableEnemiesCommand implements Command{
     private final String type = "availableEnemies";
 
-    List<Pair<CreaturesStack, List<Cell>>> enemiesToCell;
+    List<Cell> availableEnemies;
 
-    public AvailableEnemiesCommand(Map<CreaturesStack, List<Cell>> enemiesToCell) {
-        this.enemiesToCell = enemiesToCell.entrySet().stream()
-                .map(creaturesStackSetEntry -> {
-                    return new Pair<>(creaturesStackSetEntry.getKey(), creaturesStackSetEntry.getValue());
-                }).collect(Collectors.toList());
+    public AvailableEnemiesCommand(List<Cell> enemiesCell) {
+        this.availableEnemies = enemiesCell;
     }
 }

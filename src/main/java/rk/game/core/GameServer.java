@@ -104,28 +104,10 @@ public class GameServer {
         players.stream()
                 .filter(player -> !player.equals(nextPlayer))
                 .forEach(player -> commandMap.addCommand(player, new TypedCommand("wait")));
-        commandMap.addCommands(getAvailableCells());
+        commandMap.addCommand(new AvailableCellsCommand(new Cell(), new ArrayList<>()));
+        commandMap.addCommand(getAvailableEnemiesCommand());
     }
 
-    private void gameEndOut() {
-        CreaturesStack lastOver = queue.getCurrentCreature();
-        Player victorious = creaturesToPlayers.get(lastOver);
-        commandMap.addCommand(victorious, new TypedCommand("win"));
-        players.stream()
-                .filter(player -> !player.equals(victorious))
-                .forEach(player -> commandMap.addCommand(player, new TypedCommand("lose")));
-    }
-
-    private void changeCreatureOut() {
-        queue.popCreature();
-        CreaturesStack nextCreature = queue.getCurrentCreature();
-        Player nextPlayer = creaturesToPlayers.get(nextCreature);
-        commandMap.addCommand(nextPlayer, new TypedCommand("yourMove"));
-        players.stream()
-                .filter(player -> !player.equals(nextPlayer))
-                .forEach(player -> commandMap.addCommand(player, new TypedCommand("wait")));
-        commandMap.addCommands(getAvailableCells());
-    }
 
     public Map<Player, List<Command>> messageAttack(AttackMessage message) throws IllegalAccessError {
         commandMap.clean();
@@ -155,10 +137,10 @@ public class GameServer {
         commandMap.clean();
         switch (state) {
             case FullStep:
-                changeState(GameState.AttackStep);
+                changeState(GameState.FullStep);
                 break;
             case AttackStep:
-                changeState(GameState.AttackStep);
+                changeState(GameState.FullStep);
                 break;
             default:
                 break;
@@ -168,7 +150,6 @@ public class GameServer {
 
     private void moveCreature(Cell cell) {
         CreaturesStack stack = queue.getCurrentCreature();
-        queue.popCreature();
         Cell currentCell = field.getCell(stack);
         field.moveCreature(stack, cell);
         MoveCreatureCommand command = new MoveCreatureCommand();
@@ -187,6 +168,45 @@ public class GameServer {
             GetCreatureCommand command = new GetCreatureCommand(stack, cell.x, cell.y);
             return command;
         }).collect(Collectors.toList());
+    }
+
+    private AvailableEnemiesCommand getAvailableEnemiesCommand() {
+        Cell target = field.getCell(queue.getCurrentCreature());
+        return getAvailableEnemiesCommand(target.x, target.y);
+    }
+
+    private AvailableEnemiesCommand getAvailableEnemiesCommand(int x, int y) {
+        Cell target = field.getCell(x, y);
+        if (target.getStack() == null) {
+            return new AvailableEnemiesCommand(new ArrayList<>());
+        }
+        List<Cell> availableEnemies = field.getAvailableEnemies(target.getStack());
+        Player currentPlayer = creaturesToPlayers.get(target.getStack());
+        availableEnemies = availableEnemies.stream()
+                .filter(cell -> !currentPlayer.getCreatures().contains(cell.getStack()))
+                .collect(Collectors.toList());
+        return new AvailableEnemiesCommand(availableEnemies);
+    }
+
+    private void gameEndOut() {
+        CreaturesStack lastOver = queue.getCurrentCreature();
+        Player victorious = creaturesToPlayers.get(lastOver);
+        commandMap.addCommand(victorious, new TypedCommand("win"));
+        players.stream()
+                .filter(player -> !player.equals(victorious))
+                .forEach(player -> commandMap.addCommand(player, new TypedCommand("lose")));
+    }
+
+    private void changeCreatureOut() {
+        queue.popCreature();
+        CreaturesStack nextCreature = queue.getCurrentCreature();
+        Player nextPlayer = creaturesToPlayers.get(nextCreature);
+        commandMap.addCommand(nextPlayer, new TypedCommand("yourMove"));
+        players.stream()
+                .filter(player -> !player.equals(nextPlayer))
+                .forEach(player -> commandMap.addCommand(player, new TypedCommand("wait")));
+        commandMap.addCommand(getAvailableCellsCommand());
+        commandMap.addCommand(getAvailableEnemiesCommand());
     }
 
     public int calcDamage(CreaturesStack attackingStack, CreaturesStack target) {
@@ -228,23 +248,19 @@ public class GameServer {
         }
     }
 
-    public List<Command> getAvailableCells() {
+    public AvailableCellsCommand getAvailableCellsCommand() {
         CreaturesStack creaturesStack = queue.getCurrentCreature();
         Cell cell = field.getCell(creaturesStack);
-        return getAvailableCells(cell);
+        return getAvailableCellsCommand(cell);
     }
 
-    public List<Command> getAvailableCells(Cell target) {
-        Cell cell = field.getCell(target.x, target.y);
-        if (cell.getStack() == null) {
-            return new ArrayList<>();
+    public AvailableCellsCommand getAvailableCellsCommand(Cell target) {
+        target = field.getCell(target.x, target.y);
+        if (target.getStack() == null) {
+            return new AvailableCellsCommand(target, new ArrayList<>());
         }
-        List<Cell> cells = field.getAvailableAria(cell.getStack());
-        AvailableCellsCommand availableCellsCommand = new AvailableCellsCommand(target, cells);
-        Map<CreaturesStack, List<Cell>> availableEnemies = field.getAvailableEnemies(cells);
-        AvailableEnemiesCommand availableEnemiesCommand =
-                new AvailableEnemiesCommand(availableEnemies);
-        return Arrays.asList(availableCellsCommand, availableEnemiesCommand);
+        List<Cell> cells = field.getAvailableAria(target.getStack());
+        return new AvailableCellsCommand(target, cells);
     }
 
     public Player getCurrentPlayer() {

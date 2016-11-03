@@ -1,14 +1,14 @@
 import {Injectable} from "@angular/core";
 import {CreatureStack} from "../model/creatureStack";
 import {StompService} from "../stomp.service";
-import {BehaviorSubject, Observable} from "rxjs";
+import {Subject, Observable} from "rxjs";
 import {Http} from "@angular/http"
 import {Cell} from "../model/Cell";
 import {AttackMessage} from "../model/AttackMessage";
 
 @Injectable()
 export class GameService {
-    subject: BehaviorSubject<any>;
+    subject: Subject<any>;
 
     startMessage(creaturesChoice: CreatureStack): Promise<any> {
         return this.http.post("/game/start", creaturesChoice).map(body => body.json()).toPromise();
@@ -31,7 +31,7 @@ export class GameService {
     }
 
     constructor(private stompService: StompService, private http: Http) {
-        this.subject = new BehaviorSubject(null);
+        this.subject = new Subject();
         this.stompService.subscribe("/user/queue/game*", result => {
             this.subject.next(JSON.parse(result.body));
         });

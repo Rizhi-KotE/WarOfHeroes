@@ -8,7 +8,6 @@ import rk.game.model.Creature;
 
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "health")
 public class CreaturesStack {
     private Creature creature;
     private int size;
