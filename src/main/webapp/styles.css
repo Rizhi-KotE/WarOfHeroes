@@ -41,3 +41,7 @@ body {
     border-style: solid;
     border-color: #ff0099;
 }
+
+.stackSize {
+    background: #b503ff;
+}

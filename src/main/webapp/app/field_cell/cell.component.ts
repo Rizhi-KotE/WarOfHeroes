@@ -13,11 +13,12 @@ import Rx from "rxjs"
         'top.px': 50*cell.y,
         'left.px': 50*cell.x}"
     [style.background-image]="getImage()"
+    style="background-size: cover"
     [ngClass]="{cell: true, choose: chosen, available: cell.available, availableEnemy: cell.availableEnemy, highlited: highlited}" 
     (click)="onChoose()"
     (mouseenter)="highlited=true"
     (mouseleave)="highlited=false">
-        <span *ngIf="cell.stack" style="position: absolute; bottom: 0px; right: 0px">{{cell.stack.size}}</span>
+        <span *ngIf="cell.stack" class="stackSize" style="position: absolute; bottom: 0px; right: 0px">{{cell.stack.size}}</span>
     </div>`,
     selector: "cell"
 })
