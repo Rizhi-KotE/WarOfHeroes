@@ -14,7 +14,13 @@ import Rx from "rxjs"
         'left.px': 50*cell.x}"
     [style.background-image]="getImage()"
     style="background-size: cover"
-    [ngClass]="{cell: true, choose: chosen, available: cell.available, availableEnemy: cell.availableEnemy, highlited: highlited}" 
+    [ngClass]="{
+        cell: true, 
+        choose: chosen, 
+        available: cell.available, 
+        availableEnemy: cell.availableEnemy, 
+        highlited: highlited,
+        yourTurn: cell.yourTurn}" 
     (click)="onChoose()"
     (mouseenter)="highlited=true"
     (mouseleave)="highlited=false">

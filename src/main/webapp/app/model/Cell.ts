@@ -8,6 +8,7 @@ export class Cell {
 
     x: number;
     y: number;
+    yourTurn: boolean;
 
     constructor(x: number, y: number) {
         this.x = x;
@@ -21,6 +22,7 @@ export class Cell {
             this.available = false;
             this.availableEnemy = false;
             this.chosen = false;
+            this.yourTurn = false;
         }
     }
 

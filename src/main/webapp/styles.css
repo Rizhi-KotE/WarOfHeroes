@@ -45,3 +45,9 @@ body {
 .stackSize {
     background: #b503ff;
 }
+
+.yourTurn {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #20ff35;
+}

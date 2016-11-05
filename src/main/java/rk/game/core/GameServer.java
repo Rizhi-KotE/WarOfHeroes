@@ -46,6 +46,7 @@ public class GameServer {
             }
         }
         placeCreatures();
+        changeCreatureOut();
     }
 
     private void placeCreatures() {
@@ -104,7 +105,8 @@ public class GameServer {
         players.stream()
                 .filter(player -> !player.equals(nextPlayer))
                 .forEach(player -> commandMap.addCommand(player, new TypedCommand("wait")));
-        commandMap.addCommand(new AvailableCellsCommand(new Cell(), new ArrayList<>()));
+        List<Cell> availableAria = field.getAvailableAria(field.getCell(nextCreature), 0);
+        commandMap.addCommand(new AvailableCellsCommand(field.getCell(nextCreature), availableAria));
         commandMap.addCommand(getAvailableEnemiesCommand());
     }
 
@@ -201,10 +203,10 @@ public class GameServer {
         queue.popCreature();
         CreaturesStack nextCreature = queue.getCurrentCreature();
         Player nextPlayer = creaturesToPlayers.get(nextCreature);
-        commandMap.addCommand(nextPlayer, new TypedCommand("yourMove"));
+        commandMap.addCommand(nextPlayer, new ChangeTurnCommand(field.getCell(nextCreature), true));
         players.stream()
                 .filter(player -> !player.equals(nextPlayer))
-                .forEach(player -> commandMap.addCommand(player, new TypedCommand("wait")));
+                .forEach(player -> commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false)));
         commandMap.addCommand(getAvailableCellsCommand());
         commandMap.addCommand(getAvailableEnemiesCommand());
     }
@@ -262,7 +264,7 @@ public class GameServer {
         if (target.getStack() == null) {
             return new AvailableCellsCommand(target, new ArrayList<>());
         }
-        List<Cell> cells = field.getAvailableAria(target.getStack());
+        List<Cell> cells = field.getAvailableAria(target, target.getStack().getCreature().getSpeed());
         return new AvailableCellsCommand(target, cells);
     }
 

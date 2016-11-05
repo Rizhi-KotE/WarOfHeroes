@@ -30,7 +30,8 @@ public class FieldTest {
 
     @Test
     public void getAvailableAria() throws Exception {
-        List<Cell> cells = field.getAvailableAria(stack);
+        Cell cell = field.getCell(stack);
+        List<Cell> cells = field.getAvailableAria(cell, stack.getCreature().getSpeed());
         printMatrix(cells);
         assertEquals(cells.size(), 13);
     }
@@ -39,7 +40,8 @@ public class FieldTest {
     /*
     * get all available creatures(reflective)*/
     public void getAvailableEnemies() throws Exception {
-        List<Cell> cells = field.getAvailableAria(stack);
+        Cell cell = field.getCell(stack);
+        List<Cell> cells = field.getAvailableAria(cell, stack.getCreature().getSpeed());
         List<Cell> list = field.getAvailableEnemies(cells);
         printMatrix(list);
         assertEquals(list.size(), 2);

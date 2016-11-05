@@ -9,6 +9,7 @@ import {AvailableCellsCommand} from "../model/AvailableCellsCommand";
 import {AvailableEnemiesCommand} from "../model/AvailableEnemiesCommand";
 import {AttackMessage} from "../model/AttackMessage";
 import {DamageCommand} from "../model/DamageCommand";
+import {ChangeTurnCommand} from "../model/ChangeTurnCommand";
 
 @Component({
     selector: "field",
@@ -43,7 +44,7 @@ export class FieldComponent implements OnInit{
 
     matrix: Cell[][];
     currentCell: Cell;
-    chosenCell: Cell;
+    yourTurn: boolean = true;
 
     constructor(private gameEngine: GameEngine, private gameService: GameService) {
         this.gameEngine.commandChain()
@@ -65,17 +66,20 @@ export class FieldComponent implements OnInit{
     }
 
     chooseCell(cell: Cell): void {
-        if (cell.available)
-            this.gameService.sendMoveCreatureMessage(cell);
-        else if (cell.availableEnemy) {
-            var message = new AttackMessage(cell);
-            this.gameEngine.sendAtackMessage(message);
+        if (this.yourTurn) {
+            if (cell.available)
+                this.gameService.sendMoveCreatureMessage(cell);
+            else if (cell.availableEnemy) {
+                var message = new AttackMessage(cell);
+                this.gameEngine.sendAtackMessage(message);
+            }
         }
     }
 
     availableCells(command: AvailableCellsCommand) {
         this.clearMatrix();
         this.currentCell = command.currentCell;
+        this.matrix[command.currentCell.x][command.currentCell.y].yourTurn = true;
         command.cells.forEach(cell => this.matrix[cell.x][cell.y].available = true);
     }
 
@@ -104,7 +108,8 @@ export class FieldComponent implements OnInit{
     }
 
     sendWaitMessage(): void {
-        this.gameService.sendWaitMessage();
+        if (this.yourTurn)
+            this.gameService.sendWaitMessage();
     }
 
     private calcCoordinateDelta(delta: number, second?: number) {
@@ -117,5 +122,10 @@ export class FieldComponent implements OnInit{
     damage(command: DamageCommand): void {
         var cell = this.matrix[command.targetCell.x][command.targetCell.y];
         cell.stack = command.targetCell.stack;
+    }
+
+    changeTurn(command: ChangeTurnCommand): void {
+        this.yourTurn = true;
+        //this.yourTurn = command.yourTurn;
     }
 }

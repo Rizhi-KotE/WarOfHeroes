@@ -46,8 +46,7 @@ public class Field {
         }
     }
 
-    public List<Cell> getAvailableAria(CreaturesStack creature) {
-        Cell startCell = creatures.get(creature);
+    public List<Cell> getAvailableAria(Cell startCell, int maxDistance) {
         TObjectDoubleHashMap<Cell> weights = new TObjectDoubleHashMap<>(10, 0.5f, Double.MAX_VALUE - 100);
         LinkedList<Cell> queue = new LinkedList<>();
         queue.add(startCell);
@@ -58,7 +57,7 @@ public class Field {
             for (Cell cell : availableCells) {
                 double distance = getDistance(currentCell, cell);
                 double weight = weights.get(currentCell) + distance;
-                if (weight < weights.get(cell) && weight <= creature.getCreature().getSpeed()) {
+                if (weight < weights.get(cell) && weight <= maxDistance) {
                     weights.put(cell, weight);
                     queue.push(cell);
                 }
@@ -114,7 +113,8 @@ public class Field {
     }
 
     public List<Cell> getAvailableEnemies(CreaturesStack creature) {
-        List<Cell> cells = getAvailableAria(creature);
+        Cell cell = getCell(creature);
+        List<Cell> cells = getAvailableAria(cell, creature.getCreature().getSpeed());
         return getAvailableEnemies(cells);
     }
 
