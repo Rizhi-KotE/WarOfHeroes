@@ -47,4 +47,6 @@ public class GameServerTest {
         Map<Player, List<Command>> playerListMap = server.messageAttack(new AttackMessage(new Cell(5, 5)));
         assertTrue(playerListMap.get(firstPlayer).size() > 2);
     }
+
+
 }
