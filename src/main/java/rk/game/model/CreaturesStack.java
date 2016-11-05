@@ -12,11 +12,14 @@ public class CreaturesStack {
     private Creature creature;
     private int size;
 
-    private int health;
+    private int health = -1;
 
     public void changeHealth(int delta) {
+        if(health == -1){
+            health = creature.getHealth() * size;
+        }
         health += delta;
-        size = health / creature.getHealth() + health % creature.getHealth() == 0 ? 0 : 1;
+        size = health / creature.getHealth() + (health % creature.getHealth() == 0 ? 0 : 1);
     }
 
     public CreaturesStack() {

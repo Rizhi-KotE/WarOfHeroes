@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import rk.game.command.Command;
+import rk.game.dto.AttackMessage;
+import rk.game.model.Cell;
 import rk.game.model.Creature;
 import rk.game.model.CreaturesStack;
 import rk.game.model.Player;
@@ -12,6 +15,8 @@ import rk.game.services.CreaturesService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -35,7 +40,11 @@ public class GameServerTest {
     }
 
     @Test
-    public void testFullStepMoveMessage() throws Exception{
-
+    public void testAttackMessage() throws Exception {
+        server.messageMove(new Cell(5, 5));
+        server.messageWait();
+        server.messageMove(new Cell(6, 6));
+        Map<Player, List<Command>> playerListMap = server.messageAttack(new AttackMessage(new Cell(5, 5)));
+        assertTrue(playerListMap.get(firstPlayer).size() > 2);
     }
 }

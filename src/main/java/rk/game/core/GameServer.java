@@ -113,7 +113,8 @@ public class GameServer {
         commandMap.clean();
         switch (state) {
             case AttackStep:
-                damageCreature(message.getAttackCell(), message.getTargetCell());
+                Cell currentCell = field.getCell(queue.getCurrentCreature());
+                damageCreature(currentCell, message.getTargetCell());
                 break;
             default:
                 break;
@@ -165,8 +166,7 @@ public class GameServer {
     public List<GetCreatureCommand> getCreaturesPlaces(Player currentPlayer) {
         return creaturesToPlayers.keySet().stream().map(stack -> {
             Cell cell = field.getCell(stack);
-            GetCreatureCommand command = new GetCreatureCommand(stack, cell.x, cell.y);
-            return command;
+            return new GetCreatureCommand(stack, cell.x, cell.y);
         }).collect(Collectors.toList());
     }
 
@@ -242,9 +242,12 @@ public class GameServer {
         field.removeCreature(stack);
         commandMap.addCommand(new CreatureDiedCommand(cell));
         Player attackingPlayer = creaturesToPlayers.get(stack);
+        creaturesToPlayers.remove(stack);
         attackingPlayer.getCreatures().remove(stack);
         if (attackingPlayer.getCreatures().size() == 0) {
             changeState(GameState.EndState);
+        }else {
+            changeState(GameState.FullStep);
         }
     }
 

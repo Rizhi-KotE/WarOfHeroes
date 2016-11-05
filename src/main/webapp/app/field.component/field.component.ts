@@ -8,6 +8,7 @@ import {RemoveCreatureCommand} from "../model/removeCreatureCommand";
 import {AvailableCellsCommand} from "../model/AvailableCellsCommand";
 import {AvailableEnemiesCommand} from "../model/AvailableEnemiesCommand";
 import {AttackMessage} from "../model/AttackMessage";
+import {DamageCommand} from "../model/DamageCommand";
 
 @Component({
     selector: "field",
@@ -64,11 +65,11 @@ export class FieldComponent implements OnInit{
     }
 
     chooseCell(cell: Cell): void {
-        if (cell.stack) {
-            var message = new AttackMessage(this.currentCell, cell);
-            this.gameEngine.sendAtackMessage(message);
-        } else {
+        if (cell.available)
             this.gameService.sendMoveCreatureMessage(cell);
+        else if (cell.availableEnemy) {
+            var message = new AttackMessage(cell);
+            this.gameEngine.sendAtackMessage(message);
         }
     }
 
@@ -113,4 +114,8 @@ export class FieldComponent implements OnInit{
         return delta ? delta < 0 ? -1 : 1 : 0;
     }
 
+    damage(command: DamageCommand): void {
+        var cell = this.matrix[command.targetCell.x][command.targetCell.y];
+        cell.stack = command.targetCell.stack;
+    }
 }

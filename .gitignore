@@ -26,3 +26,7 @@ nbdist/
 
 ### npm ###
 node_modules/*
+
+### temporary resources ### 
+*.gif
+*~

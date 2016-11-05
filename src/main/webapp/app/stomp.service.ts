@@ -13,8 +13,8 @@ export class StompService {
             var numbers = 5;
             this.connectToSocket(stompClient)
                 .then(client => resolve(client))
-                .catch(()=>this.connectToSocket(stompClient
-                    .then(client=>resolve(client))))
+                .catch(()=>this.connectToSocket(stompClient)
+                    .then(client=>resolve(client)))
         })
     }
 
