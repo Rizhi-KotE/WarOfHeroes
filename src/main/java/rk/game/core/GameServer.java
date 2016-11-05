@@ -105,9 +105,14 @@ public class GameServer {
         players.stream()
                 .filter(player -> !player.equals(nextPlayer))
                 .forEach(player -> commandMap.addCommand(player, new TypedCommand("wait")));
+        AvailableEnemiesCommand availableEnemiesCommand = getAvailableEnemiesCommand(0);
+        if (availableEnemiesCommand.getAvailableEnemies().size() == 0) {
+            changeState(GameState.FullStep);
+            return;
+        }
         List<Cell> availableAria = field.getAvailableAria(field.getCell(nextCreature), 0);
         commandMap.addCommand(new AvailableCellsCommand(field.getCell(nextCreature), availableAria));
-        commandMap.addCommand(getAvailableEnemiesCommand());
+        commandMap.addCommand(availableEnemiesCommand);
     }
 
 
@@ -129,6 +134,12 @@ public class GameServer {
         switch (state) {
             case FullStep:
                 moveCreature(cell);
+                AvailableEnemiesCommand availableEnemiesCommand = getAvailableEnemiesCommand(cell.x, cell.y, 0);
+                if (availableEnemiesCommand.getAvailableEnemies().size() == 0) {
+                    changeState(GameState.FullStep);
+                } else {
+                    changeState(GameState.AttackStep);
+                }
                 break;
             default:
                 break;
@@ -162,7 +173,6 @@ public class GameServer {
         command.setInY(cell.y);
         command.setStack(stack);
         commandMap.addCommand(command);
-        changeState(GameState.AttackStep);
     }
 
     public List<GetCreatureCommand> getCreaturesPlaces(Player currentPlayer) {
@@ -172,17 +182,17 @@ public class GameServer {
         }).collect(Collectors.toList());
     }
 
-    private AvailableEnemiesCommand getAvailableEnemiesCommand() {
+    private AvailableEnemiesCommand getAvailableEnemiesCommand(int distance) {
         Cell target = field.getCell(queue.getCurrentCreature());
-        return getAvailableEnemiesCommand(target.x, target.y);
+        return getAvailableEnemiesCommand(target.x, target.y, distance);
     }
 
-    private AvailableEnemiesCommand getAvailableEnemiesCommand(int x, int y) {
+    private AvailableEnemiesCommand getAvailableEnemiesCommand(int x, int y, int distance) {
         Cell target = field.getCell(x, y);
         if (target.getStack() == null) {
             return new AvailableEnemiesCommand(new ArrayList<>());
         }
-        List<Cell> availableEnemies = field.getAvailableEnemies(target.getStack());
+        List<Cell> availableEnemies = field.getAvailableEnemies(target, distance);
         Player currentPlayer = creaturesToPlayers.get(target.getStack());
         availableEnemies = availableEnemies.stream()
                 .filter(cell -> !currentPlayer.getCreatures().contains(cell.getStack()))
@@ -208,7 +218,7 @@ public class GameServer {
                 .filter(player -> !player.equals(nextPlayer))
                 .forEach(player -> commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false)));
         commandMap.addCommand(getAvailableCellsCommand());
-        commandMap.addCommand(getAvailableEnemiesCommand());
+        commandMap.addCommand(getAvailableEnemiesCommand(nextCreature.getCreature().getSpeed()));
     }
 
     public int calcDamage(CreaturesStack attackingStack, CreaturesStack target) {

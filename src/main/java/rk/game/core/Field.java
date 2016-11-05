@@ -112,9 +112,8 @@ public class Field {
         creatures.put(stack, inputCell);
     }
 
-    public List<Cell> getAvailableEnemies(CreaturesStack creature) {
-        Cell cell = getCell(creature);
-        List<Cell> cells = getAvailableAria(cell, creature.getCreature().getSpeed());
+    public List<Cell> getAvailableEnemies(Cell cell, int distance) {
+        List<Cell> cells = getAvailableAria(cell, distance);
         return getAvailableEnemies(cells);
     }
 
