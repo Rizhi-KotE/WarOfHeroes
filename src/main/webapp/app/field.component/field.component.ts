@@ -18,14 +18,15 @@ import {ChangeTurnCommand} from "../model/ChangeTurnCommand";
 <button (click)="sendAvailableCellsMessage()">Get Available cells</button>
 <button (click)="sendWaitMessage()">Wait</button>
 <div style="position: relative">
-    <div *ngFor="let line of matrix">
-        <div *ngFor="let cell of line">
-        	<cell 
+    <table>
+        <tr *ngFor="let line of matrix"> 
+            <td *ngFor="let cell of line"><cell 
         	(choose)="chooseCell($event)" 
-        	[cell]="cell"></cell>
-        </div>
-    </div>
-</div>`
+        	[cell]="cell"></cell></td>
+        </tr>
+    </table>
+</div>
+<creatures_queue></creatures_queue>`
 })
 
 

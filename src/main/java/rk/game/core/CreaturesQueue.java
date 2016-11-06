@@ -1,5 +1,6 @@
 package rk.game.core;
 
+import lombok.Getter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import rk.game.model.Cell;
@@ -11,8 +12,9 @@ import java.util.LinkedList;
 
 @Component
 @Scope(value = "prototype")
+@Getter
 public class CreaturesQueue {
-    LinkedList<CreaturesStack> queue = new LinkedList<>();
+    private LinkedList<CreaturesStack> queue = new LinkedList<>();
 
     void addCreature(CreaturesStack stack) {
 

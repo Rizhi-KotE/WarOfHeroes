@@ -5,15 +5,13 @@ import Rx from "rxjs"
 
 @Component({
     template: `
-    <div 
-    [ngStyle]="{
-        'width.px': 50,
-        'height.px': 50,
-        'position': 'absolute',
-        'top.px': 50*cell.y,
-        'left.px': 50*cell.x}"
+    <div
     [style.background-image]="getImage()"
-    style="background-size: cover"
+    style="
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    position:relative;"
     [ngClass]="{
         cell: true, 
         choose: chosen, 

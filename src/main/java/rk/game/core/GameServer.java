@@ -3,6 +3,7 @@ package rk.game.core;
 import lombok.Data;
 import rk.game.command.*;
 import rk.game.dto.AttackMessage;
+import rk.game.dto.QueuePlace;
 import rk.game.model.*;
 
 import java.util.*;
@@ -213,10 +214,22 @@ public class GameServer {
         queue.popCreature();
         CreaturesStack nextCreature = queue.getCurrentCreature();
         Player nextPlayer = creaturesToPlayers.get(nextCreature);
+        List<QueuePlace> queuePlaces = queue.getQueue()
+                .stream()
+                .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(nextPlayer)))
+                .collect(Collectors.toList());
         commandMap.addCommand(nextPlayer, new ChangeTurnCommand(field.getCell(nextCreature), true));
+        commandMap.addCommand(nextPlayer, new CreatureQueueCommand(queuePlaces));
         players.stream()
                 .filter(player -> !player.equals(nextPlayer))
-                .forEach(player -> commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false)));
+                .forEach(player -> {
+                    commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false));
+                    List<QueuePlace> places = queue.getQueue()
+                            .stream()
+                            .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(player)))
+                            .collect(Collectors.toList());
+                    commandMap.addCommand(player, new CreatureQueueCommand(places));
+                });
         commandMap.addCommand(getAvailableCellsCommand());
         commandMap.addCommand(getAvailableEnemiesCommand(nextCreature.getCreature().getSpeed()));
     }

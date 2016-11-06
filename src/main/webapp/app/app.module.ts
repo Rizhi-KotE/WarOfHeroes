@@ -28,10 +28,6 @@ import {CellComponent} from "./field_cell/cell.component";
             {
                 path: "field",
                 component: FieldComponent
-            },
-            {
-                path: "creaturesQueue",
-                component: CreatureComponent
             }
         ],
             {
