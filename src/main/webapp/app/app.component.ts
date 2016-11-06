@@ -6,10 +6,12 @@ import {CreatureStack} from "./model/creatureStack";
 @Component({
     selector: "my-app",
     template: `
-<h1>War of Heroes</h1>
-<div routerLink="/field">field</div>
-<button (click)="startGame()">Start game</button>
-<router-outlet></router-outlet>`
+<div class="container">
+    <h1>War of Heroes</h1>
+    <div routerLink="/field">field</div>
+    <button (click)="startGame()">Start game</button>
+    <router-outlet></router-outlet>
+</div>`
 })
 
 

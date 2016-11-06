@@ -5,7 +5,6 @@ import {RouterModule} from "@angular/router";
 import {AppComponent} from "./app.component";
 import {WebSocketService} from "./websocket.service";
 import {StompService} from "./stomp.service";
-import {StartPageComponent} from "./start-page.component/start-page.component";
 import {FieldComponent} from "./field.component/field.component";
 import {MaterialModule} from "@angular/material";
 import {CreatureComponent} from "./creatures.component/creature.component";
@@ -23,7 +22,7 @@ import {CellComponent} from "./field_cell/cell.component";
         RouterModule.forRoot([
             {
                 path: "",
-                component: StartPageComponent
+                component: CreatureComponent
             },
             {
                 path: "field",
@@ -43,7 +42,6 @@ import {CellComponent} from "./field_cell/cell.component";
     ],
     declarations: [
         AppComponent,
-        StartPageComponent,
         FieldComponent,
         CreatureComponent,
         CellComponent,

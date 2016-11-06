@@ -5,12 +5,14 @@ import {Subject, Observable} from "rxjs";
 import {Http} from "@angular/http"
 import {Cell} from "../model/Cell";
 import {AttackMessage} from "../model/AttackMessage";
+import {Creature} from "../model/creature";
+import {ClientResponse} from "http";
 
 @Injectable()
 export class GameService {
     subject: Subject<any>;
 
-    startMessage(creaturesChoice: CreatureStack): Promise<any> {
+    startMessage(creaturesChoice: CreatureStack[]): Promise<any> {
         return this.http.post("/game/start", creaturesChoice).map(body => body.json()).toPromise();
     }
 
@@ -71,5 +73,9 @@ export class GameService {
 
     sendAttackMessage(message: AttackMessage) {
         this.stompService.send("/user/queue/game.attackMessage", message);
+    }
+
+    getCreaturesRaces(): Promise<Map<string, Creature[]>>{
+        return this.http.get("/creature").map(responce => responce.json() as Map<string, Creature[]>).toPromise();
     }
 }
