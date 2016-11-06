@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class Cell {
-    @JsonIgnore
     private CreaturesStack stack;
     private boolean available = false;
     public int x;

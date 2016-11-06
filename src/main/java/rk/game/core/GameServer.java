@@ -120,10 +120,16 @@ public class GameServer {
     public Map<Player, List<Command>> messageAttack(AttackMessage message) throws IllegalAccessError {
         commandMap.clean();
         switch (state) {
-            case AttackStep:
+            case AttackStep: {
                 Cell currentCell = field.getCell(queue.getCurrentCreature());
                 damageCreature(currentCell, message.getTargetCell());
                 break;
+            }
+            case FullStep: {
+                Cell currentCell = field.getCell(queue.getCurrentCreature());
+                damageCreature(currentCell, message.getTargetCell());
+                break;
+            }
             default:
                 break;
         }
