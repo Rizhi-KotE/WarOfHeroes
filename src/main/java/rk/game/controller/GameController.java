@@ -1,5 +1,6 @@
 package rk.game.controller;
 
+import com.sun.org.apache.xml.internal.serializer.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -21,6 +22,8 @@ import rk.game.model.Player;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
+
+import static com.sun.org.apache.xml.internal.serializer.utils.Utils.messages;
 
 @RestController
 public class GameController {
@@ -45,14 +48,13 @@ public class GameController {
 
     @MessageMapping(value = "/queue/game.creatures")
     @SendToUser(value = "/queue/game.message")
-    public List<Command> getCreaturesPlacing(Principal principal) {
+    public void getCreaturesPlacing(Principal principal) {
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
-        List<Command> commands = new ArrayList<>();
-        commands.add(new PlacingCommand(server.getCreaturesPlaces(player)));
-        commands.add(server.getAvailableCellsCommand());
-        commands.add(server.getAvailableCellsCommand());
-        return commands;
+        if (server != null) {
+            Map<Player, List<Command>> messages = server.readyToPlay(player);
+            messages.forEach((p, commands) -> sendMessage(p, commands));
+        }
     }
 
     @MessageMapping(value = "/queue/game.moveMessage")

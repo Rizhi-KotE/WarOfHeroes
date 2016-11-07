@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class GameServer {
+
     enum GameState {
         START_STATE,
         CAN_NOT_ATTACK,
@@ -36,7 +37,6 @@ public class GameServer {
         field = new Field();
         commandMap = new CommandMap(players);
         creaturesToPlayers = new HashMap<>();
-        initServer();
     }
 
     private void initServer() {
@@ -47,6 +47,7 @@ public class GameServer {
             }
         }
         placeCreatures();
+        commandMap.addCommand(new PlacingCommand(getCreaturesPlaces()));
         changeCreature();
     }
 
@@ -79,6 +80,10 @@ public class GameServer {
         commandMap.addCommand(availableEnemiesCommand);
     }
 
+    public Map<Player, List<Command>> readyToPlay(Player player) {
+        initServer();
+        return commandMap.getMap();
+    }
 
     public Map<Player, List<Command>> messageAttack(AttackMessage message) throws IllegalAccessError {
         commandMap.clean();
@@ -141,7 +146,7 @@ public class GameServer {
         commandMap.addCommand(command);
     }
 
-    public List<GetCreatureCommand> getCreaturesPlaces(Player currentPlayer) {
+    public List<GetCreatureCommand> getCreaturesPlaces() {
         return creaturesToPlayers.keySet().stream().map(stack -> {
             Cell cell = field.getCell(stack);
             return new GetCreatureCommand(stack, cell.x, cell.y);
