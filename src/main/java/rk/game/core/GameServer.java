@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 @Data
 public class GameServer {
     enum GameState {
-        StartState,
-        FullStep,
-        AttackStep,
-        EndState;
+        START_STATE,
+        CAN_NOT_ATTACK,
+        CAN_ATTACK,
+        END_GAME;
     }
 
-    private GameState state = GameState.StartState;
+    private GameState state = GameState.START_STATE;
     public static final int RIGHT = 0;
     public static final int LEFT = 1;
     private List<Player> players;
@@ -36,7 +36,7 @@ public class GameServer {
         field = new Field();
         commandMap = new CommandMap(players);
         creaturesToPlayers = new HashMap<>();
-        changeState(GameState.FullStep);
+        initServer();
     }
 
     private void initServer() {
@@ -47,7 +47,7 @@ public class GameServer {
             }
         }
         placeCreatures();
-        changeCreatureOut();
+        changeCreature();
     }
 
     private void placeCreatures() {
@@ -62,43 +62,6 @@ public class GameServer {
         }
     }
 
-    private void changeState(GameState nextState) {
-        switch (state) {
-            case AttackStep: {
-                switch (nextState) {
-                    case FullStep: {
-                        changeCreatureOut();
-                        break;
-                    }
-                    case EndState: {
-                        gameEndOut();
-                        break;
-                    }
-                }
-                break;
-            }
-            case FullStep: {
-                switch (nextState) {
-                    case FullStep:
-                        changeCreatureOut();
-                        break;
-                    case AttackStep:
-                        moveCreatureOut();
-                }
-                break;
-            }
-            case StartState: {
-                switch (nextState) {
-                    case FullStep:
-                        initServer();
-                        break;
-                }
-                break;
-            }
-        }
-        state = nextState;
-    }
-
     private void moveCreatureOut() {
         CreaturesStack nextCreature = queue.getCurrentCreature();
         Player nextPlayer = creaturesToPlayers.get(nextCreature);
@@ -108,7 +71,7 @@ public class GameServer {
                 .forEach(player -> commandMap.addCommand(player, new TypedCommand("wait")));
         AvailableEnemiesCommand availableEnemiesCommand = getAvailableEnemiesCommand(0);
         if (availableEnemiesCommand.getAvailableEnemies().size() == 0) {
-            changeState(GameState.FullStep);
+            changeCreature();
             return;
         }
         List<Cell> availableAria = field.getAvailableAria(field.getCell(nextCreature), 0);
@@ -120,12 +83,7 @@ public class GameServer {
     public Map<Player, List<Command>> messageAttack(AttackMessage message) throws IllegalAccessError {
         commandMap.clean();
         switch (state) {
-            case AttackStep: {
-                Cell currentCell = field.getCell(queue.getCurrentCreature());
-                damageCreature(currentCell, message.getTargetCell());
-                break;
-            }
-            case FullStep: {
+            case CAN_ATTACK: {
                 Cell currentCell = field.getCell(queue.getCurrentCreature());
                 damageCreature(currentCell, message.getTargetCell());
                 break;
@@ -139,15 +97,16 @@ public class GameServer {
     public Map<Player, List<Command>> messageMove(Cell cell) {
         commandMap.clean();
         switch (state) {
-            case FullStep:
+            case CAN_NOT_ATTACK: {
                 moveCreature(cell);
-                AvailableEnemiesCommand availableEnemiesCommand = getAvailableEnemiesCommand(cell.x, cell.y, 0);
-                if (availableEnemiesCommand.getAvailableEnemies().size() == 0) {
-                    changeState(GameState.FullStep);
-                } else {
-                    changeState(GameState.AttackStep);
-                }
+                moveCreatureOut();
                 break;
+            }
+            case CAN_ATTACK: {
+                moveCreature(cell);
+                moveCreatureOut();
+                break;
+            }
             default:
                 break;
         }
@@ -157,11 +116,11 @@ public class GameServer {
     public Map<Player, List<Command>> messageWait() {
         commandMap.clean();
         switch (state) {
-            case FullStep:
-                changeState(GameState.FullStep);
+            case CAN_NOT_ATTACK:
+                changeCreature();
                 break;
-            case AttackStep:
-                changeState(GameState.FullStep);
+            case CAN_ATTACK:
+                changeCreature();
                 break;
             default:
                 break;
@@ -216,30 +175,6 @@ public class GameServer {
                 .forEach(player -> commandMap.addCommand(player, new TypedCommand("lose")));
     }
 
-    private void changeCreatureOut() {
-        queue.popCreature();
-        CreaturesStack nextCreature = queue.getCurrentCreature();
-        Player nextPlayer = creaturesToPlayers.get(nextCreature);
-        List<QueuePlace> queuePlaces = queue.getQueue()
-                .stream()
-                .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(nextPlayer)))
-                .collect(Collectors.toList());
-        commandMap.addCommand(nextPlayer, new ChangeTurnCommand(field.getCell(nextCreature), true));
-        commandMap.addCommand(nextPlayer, new CreatureQueueCommand(queuePlaces));
-        players.stream()
-                .filter(player -> !player.equals(nextPlayer))
-                .forEach(player -> {
-                    commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false));
-                    List<QueuePlace> places = queue.getQueue()
-                            .stream()
-                            .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(player)))
-                            .collect(Collectors.toList());
-                    commandMap.addCommand(player, new CreatureQueueCommand(places));
-                });
-        commandMap.addCommand(getAvailableCellsCommand());
-        commandMap.addCommand(getAvailableEnemiesCommand(nextCreature.getCreature().getSpeed()));
-    }
-
     public int calcDamage(CreaturesStack attackingStack, CreaturesStack target) {
         int pureDamage = attackingStack.getCreature().getDamage() * attackingStack.getSize();
         double coef = 0.1 * (attackingStack.getCreature().getAttack() - attackingStack.getCreature().getDefence());
@@ -260,11 +195,42 @@ public class GameServer {
             commandMap.addCommand(new DamageCommand(targetCell, attackingCell, damage));
         } else {
             performCreatureDeath(targetCell, targetStack);
+            return;
         }
         if (!attackingStack.isAlive()) {
             performCreatureDeath(attackingCell, attackingStack);
         } else {
-            changeState(GameState.FullStep);
+            changeCreature();
+        }
+    }
+
+    private void changeCreature() {
+        queue.popCreature();
+        CreaturesStack nextCreature = queue.getCurrentCreature();
+        Player nextPlayer = creaturesToPlayers.get(nextCreature);
+        List<QueuePlace> queuePlaces = queue.getQueue()
+                .stream()
+                .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(nextPlayer)))
+                .collect(Collectors.toList());
+        commandMap.addCommand(nextPlayer, new ChangeTurnCommand(field.getCell(nextCreature), true));
+        commandMap.addCommand(nextPlayer, new CreatureQueueCommand(queuePlaces));
+        players.stream()
+                .filter(player -> !player.equals(nextPlayer))
+                .forEach(player -> {
+                    commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false));
+                    List<QueuePlace> places = queue.getQueue()
+                            .stream()
+                            .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(player)))
+                            .collect(Collectors.toList());
+                    commandMap.addCommand(player, new CreatureQueueCommand(places));
+                });
+        commandMap.addCommand(getAvailableCellsCommand());
+        AvailableEnemiesCommand availableEnemiesCommand = getAvailableEnemiesCommand(nextCreature.getCreature().getSpeed());
+        commandMap.addCommand(availableEnemiesCommand);
+        if (availableEnemiesCommand.getAvailableEnemies().size() == 0) {
+            setState(GameState.CAN_NOT_ATTACK);
+        } else {
+            setState(GameState.CAN_ATTACK);
         }
     }
 
@@ -276,9 +242,11 @@ public class GameServer {
         creaturesToPlayers.remove(stack);
         attackingPlayer.getCreatures().remove(stack);
         if (attackingPlayer.getCreatures().size() == 0) {
-            changeState(GameState.EndState);
+            setState(GameState.END_GAME);
+            gameEndOut();
         }else {
-            changeState(GameState.FullStep);
+            setState(GameState.CAN_NOT_ATTACK);
+            changeCreature();
         }
     }
 
