@@ -58,4 +58,8 @@ export class GameEngine {
     sendAtackMessage(message: AttackMessage) {
         this.gameService.sendAttackMessage(message);
     }
+
+    sendFinishMessage(){
+        this.gameService.sendFinishMessage();
+    }
 }

@@ -43,6 +43,7 @@ export class AppComponent {
     click() {
         this.router.navigateByUrl("");
         this.visible = false;
+        this.gameEngine.sendFinishMessage();
     }
 
     constructor(private gameEngine: GameEngine, private router: Router) {

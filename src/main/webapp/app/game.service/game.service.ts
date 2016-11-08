@@ -79,4 +79,8 @@ export class GameService {
     getCreaturesRaces(): Promise<Race[]>{
         return this.http.get("/creature").map(responce => responce.json() as Race[]).toPromise();
     }
+
+    sendFinishMessage() {
+        this.stompService.send("/user/queue/game.finish");
+    }
 }
