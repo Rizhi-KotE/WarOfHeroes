@@ -14,10 +14,7 @@ import {ChangeTurnCommand} from "../model/ChangeTurnCommand";
 @Component({
     selector: "field",
     template: `
-<button (click)="placeCreatures()">Place Creatures</button>
-<button (click)="sendAvailableCellsMessage()">Get Available cells</button>
-<button (click)="sendWaitMessage()">Wait</button>
-<div style="position: relative">
+<div style="position: relative; display: inline-block;">
     <table>
         <tr *ngFor="let line of matrix"> 
             <td *ngFor="let cell of line"><cell 
@@ -26,7 +23,11 @@ import {ChangeTurnCommand} from "../model/ChangeTurnCommand";
         </tr>
     </table>
 </div>
-<creatures_queue></creatures_queue>`
+<div style="display: inline-block; vertical-align: top">
+    <button (click)="sendWaitMessage()">NEXT CREATURE</button>
+    <creatures_queue></creatures_queue>
+</div>`
+
 })
 
 

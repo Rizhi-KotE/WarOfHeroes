@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rk.game.model.Creature;
+import rk.game.model.Race;
 
 import javax.annotation.PostConstruct;
 import javax.swing.filechooser.FileFilter;
@@ -20,15 +21,15 @@ public class CreaturesService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public Map<String, List<Creature>> getRaces() {
+    public List<Race> getRaces() {
         return races;
     }
 
-    public void setRaces(Map<String, List<Creature>> races) {
+    public void setRaces(List<Race> races) {
         this.races = races;
     }
 
-    private Map<String, List<Creature>> races = new HashMap<>();
+    private List<Race> races = new ArrayList<>();
 
     @PostConstruct
     void loadCreaturesResources(){
@@ -37,11 +38,8 @@ public class CreaturesService {
         File[] jsons = dir.listFiles(pathname -> filter.accept(pathname));
         for(File file: jsons){
             try {
-                Creature[] creatures = objectMapper.readValue(file, Creature[].class);
-                List<Creature> filtered = Arrays.asList(creatures)
-                        .stream().filter(creature -> creature.getName() != null && creature.getName().length() > 0)
-                        .collect(Collectors.toList());
-                races.put(file.getName(), filtered);
+                Race race = objectMapper.readValue(file, Race.class);
+                races.add(race);
             } catch (IOException e) {
                 e.printStackTrace();
             }

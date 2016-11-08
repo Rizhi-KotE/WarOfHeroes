@@ -7,6 +7,7 @@ import {Cell} from "../model/Cell";
 import {AttackMessage} from "../model/AttackMessage";
 import {Creature} from "../model/creature";
 import {ClientResponse} from "http";
+import {Race} from "../model/Race";
 
 @Injectable()
 export class GameService {
@@ -75,7 +76,7 @@ export class GameService {
         this.stompService.send("/user/queue/game.attackMessage", message);
     }
 
-    getCreaturesRaces(): Promise<Map<string, Creature[]>>{
-        return this.http.get("/creature").map(responce => responce.json() as Map<string, Creature[]>).toPromise();
+    getCreaturesRaces(): Promise<Race[]>{
+        return this.http.get("/creature").map(responce => responce.json() as Race[]).toPromise();
     }
 }

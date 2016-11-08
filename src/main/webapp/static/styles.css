@@ -20,3 +20,8 @@ html {
     border-image-repeat: round;
     background: url(/static/default_bg_blue.jpg)
 }
+button {
+    font-size: 30px;
+    color: yellow;
+    background: url(/static/default_bg_blue.jpg)
+}

@@ -7,4 +7,5 @@ export class Creature {
     health: number;
     mana: number;
     image: string;
+    increase: number;
 }

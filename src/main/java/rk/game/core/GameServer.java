@@ -6,11 +6,15 @@ import rk.game.dto.AttackMessage;
 import rk.game.dto.QueuePlace;
 import rk.game.model.*;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
 public class GameServer {
+
+    public static final double DIAGONAL_LENGTH = 1.8;
 
     enum GameState {
         START_STATE,
@@ -81,22 +85,30 @@ public class GameServer {
     }
 
     public Map<Player, List<Command>> readyToPlay(Player player) {
-        initServer();
-        return commandMap.getMap();
+        switch (state) {
+            case START_STATE:
+                initServer();
+        }
+        commandMap.addCommands(getCreaturesPlaces());
+        return getOutput();
     }
 
     public Map<Player, List<Command>> messageAttack(AttackMessage message) throws IllegalAccessError {
         commandMap.clean();
+        Cell currentCell = field.getCell(queue.getCurrentCreature());
+        Cell targetCell = message.getTargetCell();
+        if(Point.distance(targetCell.x, targetCell.y, currentCell.x, currentCell.y) > DIAGONAL_LENGTH){
+            return getOutput();
+        }
         switch (state) {
             case CAN_ATTACK: {
-                Cell currentCell = field.getCell(queue.getCurrentCreature());
                 damageCreature(currentCell, message.getTargetCell());
                 break;
             }
             default:
                 break;
         }
-        return commandMap.getMap();
+        return getOutput();
     }
 
     public Map<Player, List<Command>> messageMove(Cell cell) {
@@ -115,7 +127,7 @@ public class GameServer {
             default:
                 break;
         }
-        return commandMap.getMap();
+        return getOutput();
     }
 
     public Map<Player, List<Command>> messageWait() {
@@ -130,13 +142,51 @@ public class GameServer {
             default:
                 break;
         }
+        return getOutput();
+    }
+
+    public Map<Player, List<Command>> getOutput(){
+        switch (state){
+            case START_STATE:
+                commandMap.clean();
+                commandMap.addCommand(new TypedCommand("wait"));
+                break;
+            case END_GAME:
+                commandMap.clean();
+                gameEndOut();
+                break;
+            default:
+                CreaturesStack nextCreature = queue.getCurrentCreature();
+                Player nextPlayer = creaturesToPlayers.get(nextCreature);
+                List<QueuePlace> queuePlaces = queue.getQueue()
+                        .stream()
+                        .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(nextPlayer)))
+                        .collect(Collectors.toList());
+                commandMap.addCommand(nextPlayer, new ChangeTurnCommand(field.getCell(nextCreature), true));
+                commandMap.addCommand(nextPlayer, new CreatureQueueCommand(queuePlaces));
+                players.stream()
+                        .filter(player -> !player.equals(nextPlayer))
+                        .forEach(player -> {
+                            commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false));
+                            List<QueuePlace> places = queue.getQueue()
+                                    .stream()
+                                    .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(player)))
+                                    .collect(Collectors.toList());
+                            commandMap.addCommand(player, new CreatureQueueCommand(places));
+                        });
+                commandMap.addCommand(getAvailableCellsCommand());
+                AvailableEnemiesCommand availableEnemiesCommand = getAvailableEnemiesCommand(nextCreature.getSpeed());
+                commandMap.addCommand(availableEnemiesCommand);
+                break;
+        }
         return commandMap.getMap();
     }
 
     private void moveCreature(Cell cell) {
         CreaturesStack stack = queue.getCurrentCreature();
         Cell currentCell = field.getCell(stack);
-        field.moveCreature(stack, cell);
+        int distance = field.moveCreature(stack, cell);
+        stack.move(distance);
         MoveCreatureCommand command = new MoveCreatureCommand();
         command.setOutX(currentCell.x);
         command.setOutY(currentCell.y);
@@ -212,27 +262,7 @@ public class GameServer {
     private void changeCreature() {
         queue.popCreature();
         CreaturesStack nextCreature = queue.getCurrentCreature();
-        Player nextPlayer = creaturesToPlayers.get(nextCreature);
-        List<QueuePlace> queuePlaces = queue.getQueue()
-                .stream()
-                .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(nextPlayer)))
-                .collect(Collectors.toList());
-        commandMap.addCommand(nextPlayer, new ChangeTurnCommand(field.getCell(nextCreature), true));
-        commandMap.addCommand(nextPlayer, new CreatureQueueCommand(queuePlaces));
-        players.stream()
-                .filter(player -> !player.equals(nextPlayer))
-                .forEach(player -> {
-                    commandMap.addCommand(player, new ChangeTurnCommand(field.getCell(nextCreature), false));
-                    List<QueuePlace> places = queue.getQueue()
-                            .stream()
-                            .map(stack -> new QueuePlace(stack, creaturesToPlayers.get(stack).equals(player)))
-                            .collect(Collectors.toList());
-                    commandMap.addCommand(player, new CreatureQueueCommand(places));
-                });
-        commandMap.addCommand(getAvailableCellsCommand());
-        AvailableEnemiesCommand availableEnemiesCommand = getAvailableEnemiesCommand(nextCreature.getCreature().getSpeed());
-        commandMap.addCommand(availableEnemiesCommand);
-        if (availableEnemiesCommand.getAvailableEnemies().size() == 0) {
+        if (getAvailableEnemiesCommand(nextCreature.getSpeed()).getAvailableEnemies().size() == 0) {
             setState(GameState.CAN_NOT_ATTACK);
         } else {
             setState(GameState.CAN_ATTACK);
@@ -266,7 +296,7 @@ public class GameServer {
         if (target.getStack() == null) {
             return new AvailableCellsCommand(target, new ArrayList<>());
         }
-        List<Cell> cells = field.getAvailableAria(target, target.getStack().getCreature().getSpeed());
+        List<Cell> cells = field.getAvailableAria(target, target.getStack().getSpeed());
         return new AvailableCellsCommand(target, cells);
     }
 

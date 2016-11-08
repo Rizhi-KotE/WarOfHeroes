@@ -14,6 +14,7 @@ import {CreatureStackComponent} from "./creature_stack.component/creature_stack.
 import {GameEngine} from "./game_engine/game_engine.service";
 import {CellComponent} from "./field_cell/cell.component";
 import {CreatureCardComponent} from "./creature_card/creature_card.component";
+import {DialogComponent} from "./dialog/dialog.component";
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import {CreatureCardComponent} from "./creature_card/creature_card.component";
         CellComponent,
         CreaturesQueueComponent,
         CreatureStackComponent,
-        CreatureCardComponent
+        CreatureCardComponent,
+        DialogComponent
     ],
     bootstrap: [AppComponent]
 })

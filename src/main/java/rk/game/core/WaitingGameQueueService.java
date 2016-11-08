@@ -7,6 +7,7 @@ import rk.game.controller.GameController;
 import rk.game.model.Creature;
 import rk.game.model.CreaturesStack;
 import rk.game.model.Player;
+import rk.game.model.Race;
 import rk.game.services.CreaturesService;
 
 import java.util.Arrays;
@@ -36,12 +37,11 @@ public class WaitingGameQueueService {
     private CreaturesService service;
 
     private Player addWhippingBoy() {
-        Player whippingBoy = new Player();
-        List<Creature> creatures = service.getRaces().get("inferno_creatures.crt");
-        List<CreaturesStack> stacks = creatures.stream().map(creature -> new CreaturesStack(creature, 10))
-                .collect(Collectors.toList());
-        whippingBoy.setCreatures(stacks);
-        whippingBoy.setUsername("whipping");
+        Race race = service.getRaces().get(0);
+//        List<CreaturesStack> stacks = race.getCreatures().stream().map(creature -> new CreaturesStack(creature, 10))
+//                .collect(Collectors.toList());
+        List<CreaturesStack> stacks = Arrays.asList(new CreaturesStack(race.getCreatures().get(0), 10));
+        Player whippingBoy = new Player("whipping", stacks);
         return whippingBoy;
     }
 

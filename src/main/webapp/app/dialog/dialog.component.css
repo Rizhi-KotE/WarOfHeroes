@@ -1,0 +1,27 @@
+.dialog {
+    position: fixed;
+    top: calc(50% - 75px);
+    left: calc(50% - 150px);
+    width: 300px;
+    height: 150px;
+    border: 20px solid;
+    border-image-source: url(/static/border.png);
+    border-image-slice: 20;
+    border-image-repeat: round;
+    background: url("/static/default_bg.jpg");
+    z-index: 100;
+    text-align: center;
+}
+
+.dialog button {
+    width: 65px;
+    height: 30px;
+    background: url("/static/check_button_sprite.png") no-repeat;
+    background-position: -65px;
+    top: calc(50%);
+    margin-top: 30px;
+}
+
+.dialog button:hover {
+    background-position: 0 0;
+}

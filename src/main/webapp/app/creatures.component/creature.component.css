@@ -12,3 +12,12 @@
 .gather_group {
     display: inline-block;
 }
+
+.race_list {
+    height: 60%;
+    box-shadow: 0 0 1px white;
+}
+
+.race_image {
+    box-shadow: 0 0 5px white;
+}

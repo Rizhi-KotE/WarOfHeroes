@@ -40,9 +40,7 @@ public class GameController {
     @RequestMapping(value = "/game/start", method = RequestMethod.POST)
     public List<String> gameStart(Principal p, @RequestBody @Valid ArrayList<CreaturesStack> creatureChoice) {
         String username = p.getName();
-        Player player = new Player();
-        player.setUsername(username);
-        player.setCreatures(creatureChoice);
+        Player player = new Player(username, creatureChoice);
         return Arrays.asList(waitingGameQueueService.addPlayer(player));
     }
 

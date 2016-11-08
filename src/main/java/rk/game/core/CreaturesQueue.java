@@ -26,6 +26,8 @@ public class CreaturesQueue {
 
     public void popCreature() {
         queue.addLast(queue.pop());
+        if (queue.getFirst() != null)
+            queue.getFirst().newStep();
     }
 
     public void removeCreature(CreaturesStack stack) {
