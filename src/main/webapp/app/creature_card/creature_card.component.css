@@ -1,0 +1,42 @@
+.card {
+    background: url(/static/default_bg.jpg);
+    display: inline-block;
+    box-shadow: 0 0 3px white;
+}
+.properties {
+    overflow: hidden;
+    position: relative;
+    display: inline-block;
+}
+.image {
+    margin: 10px;
+    display: inline-block;
+    vertical-align: top;
+}
+.image img{
+    box-shadow: 0 0 5px white;
+}
+.images {
+    top: 12px;
+    margin-left: 5px;
+    width: 23px;
+    height: 200px;
+    background: url(/static/TPCAINFO.bmp);
+    position: absolute;
+    transform: scale(1.1);
+}
+.pair {
+    margin: 3px;
+    margin-left: 35px;
+    margin-right: 5px;
+    box-shadow: 0 0 3px white;
+    width: 100px;
+    background: url(/static/default_bg.jpg);
+}
+.value {
+    float: right;
+}
+span {
+    color: white;
+    font-family: georgia;
+}

@@ -6,12 +6,7 @@ import {CreatureStack} from "./model/creatureStack";
 @Component({
     selector: "my-app",
     template: `
-<div class="container">
-    <h1>War of Heroes</h1>
-    <div routerLink="/field">field</div>
-    <button (click)="startGame()">Start game</button>
-    <router-outlet></router-outlet>
-</div>`
+    <router-outlet></router-outlet>`
 })
 
 
@@ -24,10 +19,7 @@ export class AppComponent {
         this.http.get("/creature").toPromise().then(
             responce => {
                 return responce.json()[0].map(creature => {
-                    var creatureChoice : CreatureStack = new CreatureStack();
-                    creatureChoice.size = 10;
-                    creatureChoice.creature = creature;
-                    return creatureChoice;
+                    new CreatureStack(creature, 10);
                 });
             })
             .then(creaturesChoise=>this.gameService.startMessage(creaturesChoise));

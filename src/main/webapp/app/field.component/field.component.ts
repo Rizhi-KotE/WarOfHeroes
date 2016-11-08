@@ -45,7 +45,7 @@ export class FieldComponent implements OnInit{
 
     matrix: Cell[][];
     currentCell: Cell;
-    yourTurn: boolean;
+    yourTurn: boolean = true;
 
     constructor(private gameEngine: GameEngine, private gameService: GameService) {
         this.gameEngine.commandChain()
@@ -126,7 +126,7 @@ export class FieldComponent implements OnInit{
     }
 
     changeTurn(command: ChangeTurnCommand): void {
-        // this.yourTurn = true;
-        this.yourTurn = command.yourTurn;
+        this.yourTurn = true;
+        //this.yourTurn = command.yourTurn;
     }
 }

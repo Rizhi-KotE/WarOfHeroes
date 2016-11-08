@@ -24,11 +24,26 @@ public class WaitingGameQueueService {
 
     public String addPlayer(Player player) {
         waitingQueue.add(player);
-        if (waitingQueue.size() < 2) {
+        if (waitingQueue.size() < 1) {
             return "wait";
         }
-        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), waitingQueue.pollFirst());
+        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), addWhippingBoy());
         dispatcher.runGame(playersToNewGame);
         return "gameStart";
     }
+
+    @Autowired
+    private CreaturesService service;
+
+    private Player addWhippingBoy() {
+        Player whippingBoy = new Player();
+        List<Creature> creatures = service.getRaces().get("inferno_creatures.crt");
+        List<CreaturesStack> stacks = creatures.stream().map(creature -> new CreaturesStack(creature, 10))
+                .collect(Collectors.toList());
+        whippingBoy.setCreatures(stacks);
+        whippingBoy.setUsername("whipping");
+        return whippingBoy;
+    }
+
+
 }

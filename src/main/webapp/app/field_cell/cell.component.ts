@@ -1,28 +1,31 @@
 import {Component, Input, Output, EventEmitter} from "@angular/core";
 import {Cell} from "../model/Cell";
 import {DomSanitizer} from "@angular/platform-browser"
-import Rx from "rxjs"
 
 @Component({
+    styleUrls: ['app/field_cell/cell.component.css'],
     template: `
     <div
-    [style.background-image]="getImage()"
     style="
-    background-size: cover;
     width: 50px;
     height: 50px;
     position:relative;"
-    [ngClass]="{
-        cell: true, 
-        choose: chosen, 
-        available: cell.available, 
-        availableEnemy: cell.availableEnemy, 
-        highlited: highlited,
-        yourTurn: cell.yourTurn}" 
+    class="cell"
     (click)="onChoose()"
     (mouseenter)="highlited=true"
     (mouseleave)="highlited=false">
-        <span *ngIf="cell.stack" class="stackSize" style="position: absolute; bottom: 0px; right: 0px">{{cell.stack.size}}</span>
+        <div [ngClass]="{enemy: cell.availableEnemy, current: cell.yourTurn}" class="second"></div>
+        <div [ngClass]="{enemy: cell.availableEnemy, current: cell.yourTurn}" class="first"></div>
+        <div [ngClass]="{
+        choose: chosen, 
+        available: cell.available,
+        highlited: highlited}" 
+        [style.background-image]="getImage()" 
+        class="shield" style="background-size: cover">
+            <span *ngIf="cell.stack" class="stackSize" style="position: absolute; bottom: 0px; right: 0px">
+                {{cell.stack.size}}
+            </span>
+        </div>
     </div>`,
     selector: "cell"
 })

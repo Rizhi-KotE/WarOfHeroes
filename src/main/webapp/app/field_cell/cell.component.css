@@ -1,0 +1,115 @@
+.cell {
+    width: 50px;
+    height: 50px;
+    /*background: #fc0;*/
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+.choose{
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ff0099;
+}
+
+.shield.available{
+    background: #ffb45c;
+}
+
+.enemiesNeighbour{
+    background: #ff0000;
+}
+
+.shield.highlited{
+    background: #fff71f;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ff0099;
+}
+
+.stackSize {
+    background: #b503ff;
+}
+
+.yourTurn {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #20ff35;
+}
+
+.shield {
+    content: " ";
+    position: absolute;
+    top: 5%;
+    bottom: 5%;
+    left: 5%;
+    right: 5%;
+    border: transparent;
+    background: white;
+    z-index: 10;
+}
+
+.enemy.first{
+    content: " ";
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    left: 60%;
+    top: 60%;
+    border-radius: 50%;
+    background: red;
+    z-index: -1;
+    transform-origin: -30% -30%;
+    animation: spin 2s linear -1s infinite;
+}
+
+.enemy.second {
+    content: " ";
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    left: 60%;
+    top: 60%;
+    border-radius: 50%;
+    background: red;
+    z-index: -1;
+    transform-origin: -30% -30%;
+    animation: spin 2s linear infinite;
+}
+
+.current.first{
+    content: " ";
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    left: 60%;
+    top: 60%;
+    border-radius: 50%;
+    background: green;
+    z-index: -1;
+    transform-origin: -30% -30%;
+    animation: spin 2s linear -1s infinite;
+}
+
+.current.second {
+    content: " ";
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    left: 60%;
+    top: 60%;
+    border-radius: 50%;
+    background: green;
+    z-index: -1;
+    transform-origin: -30% -30%;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin{
+    from{
+        transform: rotate(0deg)
+    }
+    to{
+        transform: rotate(360deg)
+    }
+}

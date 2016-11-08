@@ -5,25 +5,23 @@ import {GameService} from "../game.service/game.service";
 import {Creature} from "../model/creature";
 import {Router} from "@angular/router";
 @Component({
+    styleUrls: ["app/creatures.component/creature.component.css"],
     selector: "creatures",
     template: `
 <div>
-    <button class="btn btn-primary" style="display: inline-block" (click)="gatherGroup()">Собрать отряд</button>
-    <div class="dropdown" style="display: inline-block">
-        <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">{{currentRace}}
-        <span class="caret"></span></button>
-        <ul class="dropdown-menu">
-            <li *ngFor="let race of getRaces()"><a href="#" (click)="setRace(race)">{{race}}</a></li>
-        </ul>
+    <div class="race_card">
+        <div *ngFor="let stack of currentCreatures" class="card_place">
+            <card [stack]="stack"></card>
+        </div>
     </div>
-    <div class="container">
-        <div *ngFor="let stack of currentCreatures" style="display: inline-block; width: 30%">
-            <img [src]="stack.creature.image" style="left: 50%; width: 96px;margin-left: 48px;">
-            <div>
-                <div>{{stack.size}}</div>
-                <md-slider min="0" [max]="getMaxStackSize(stack)" [(ngModel)]="stack.size"></md-slider>
-                <span>{{getMaxStackSize(stack)}}</span>
-            </div>
+    <div style="display: inline-block;">
+        <button class="gather_group" (click)="gatherGroup()">Собрать отряд</button>
+        <div class="dropdown" style="display: inline-block">
+            <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">{{currentRace}}
+            <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li *ngFor="let race of getRaces()"><a href="#" (click)="setRace(race)">{{race}}</a></li>
+            </ul>
         </div>
     </div>
 </div>`

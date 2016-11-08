@@ -1,0 +1,14 @@
+.race_card {
+    width: 60%;
+    display: inline-block;
+    vertical-align: top
+}
+
+.card_place {
+    display: inline-block;
+    margin: 5px
+}
+
+.gather_group {
+    display: inline-block;
+}
