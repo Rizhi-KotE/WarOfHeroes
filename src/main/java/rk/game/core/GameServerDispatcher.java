@@ -31,4 +31,9 @@ public class GameServerDispatcher {
     public Player getPlayer(String username) {
         return players.get(username);
     }
+
+    public void removePlayer(String name) {
+        map.remove(name);
+        players.remove(name);
+    }
 }

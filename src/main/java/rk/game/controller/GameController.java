@@ -69,6 +69,12 @@ public class GameController {
         Player player = dispatcher.getPlayer(principal.getName());
         Map<Player, List<Command>> messages = server.messageAttack(message);
         messages.forEach((p, commands) -> sendMessage(p, commands));
+
+    }
+
+    @MessageMapping(value = "queue/game.finish")
+    public void finishGame(Principal principal){
+        dispatcher.removePlayer(principal.getName());
     }
 
     @MessageMapping(value = "/queue/game.waitMessage")

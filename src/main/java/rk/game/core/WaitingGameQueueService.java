@@ -10,6 +10,7 @@ import rk.game.model.Player;
 import rk.game.model.Race;
 import rk.game.services.CreaturesService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,10 +26,13 @@ public class WaitingGameQueueService {
 
     public String addPlayer(Player player) {
         waitingQueue.add(player);
-        if (waitingQueue.size() < 1) {
+        if (waitingQueue.size() < 2) {
             return "wait";
         }
-        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), addWhippingBoy());
+//        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), addWhippingBoy());
+        ArrayList<Player> playersToNewGame = new ArrayList<>();
+        playersToNewGame.add(waitingQueue.pop());
+        playersToNewGame.add(waitingQueue.pop());
         dispatcher.runGame(playersToNewGame);
         return "gameStart";
     }
