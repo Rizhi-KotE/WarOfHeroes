@@ -29,25 +29,10 @@ public class WaitingGameQueueService {
         if (waitingQueue.size() < 2) {
             return "wait";
         }
-//        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), addWhippingBoy());
         ArrayList<Player> playersToNewGame = new ArrayList<>();
         playersToNewGame.add(waitingQueue.pop());
         playersToNewGame.add(waitingQueue.pop());
         dispatcher.runGame(playersToNewGame);
         return "gameStart";
     }
-
-    @Autowired
-    private CreaturesService service;
-
-    private Player addWhippingBoy() {
-        Race race = service.getRaces().get(0);
-//        List<CreaturesStack> stacks = race.getCreatures().stream().map(creature -> new CreaturesStack(creature, 10))
-//                .collect(Collectors.toList());
-        List<CreaturesStack> stacks = Arrays.asList(new CreaturesStack(race.getCreatures().get(0), 10));
-        Player whippingBoy = new Player("whipping", stacks);
-        return whippingBoy;
-    }
-
-
 }

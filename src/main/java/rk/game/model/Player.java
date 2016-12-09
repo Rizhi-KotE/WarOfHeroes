@@ -17,4 +17,8 @@ public class Player {
         this.username = username;
         this.creatures = new ArrayList<>(creatures);
     }
+
+    public void removeCreature(CreaturesStack stack){
+        creatures.remove(stack);
+    }
 }

@@ -8,10 +8,11 @@ import {AttackMessage} from "../model/AttackMessage";
 import {Creature} from "../model/creature";
 import {ClientResponse} from "http";
 import {Race} from "../model/Race";
+import {Command} from "../model/Command";
 
 @Injectable()
 export class GameService {
-    subject: Subject<any>;
+    subject: Subject<any> = new Subject();
 
     startMessage(creaturesChoice: CreatureStack[]): Promise<any> {
         return this.http.post("/game/start", creaturesChoice).map(body => body.json()).toPromise();
@@ -29,12 +30,7 @@ export class GameService {
         this.stompService.send("/user/queue/game.creatures");
     }
 
-    makeAMove(message): Promise<any> {
-        return this.http.post("/game/makemove", message).map(body => body.json()).toPromise();
-    }
-
     constructor(private stompService: StompService, private http: Http) {
-        this.subject = new Subject();
         this.stompService.subscribe("/user/queue/game*", result => {
             this.subject.next(JSON.parse(result.body));
         });

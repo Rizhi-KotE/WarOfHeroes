@@ -1,9 +1,9 @@
 import {Component, Input, Output, EventEmitter} from "@angular/core"
 import {CreatureStack} from "../model/creatureStack";
-import {GameEngine} from "../game_engine/game_engine.service";
 import {CreatureQueueCommand} from "./CreatureQueueCommand";
 import {QueuePlace} from "./QueuePlace";
 import {DomSanitizer} from "@angular/platform-browser"
+import {GameService} from "../game.service/game.service";
 
 
 @Component({
@@ -27,12 +27,8 @@ import {DomSanitizer} from "@angular/platform-browser"
 export class CreaturesQueueComponent {
     creatures: QueuePlace[];
 
-	onChoose(stack: CreatureStack): void{
-		this.gameEngine.chooseStack(stack);
-	}
-
-    constructor(private gameEngine: GameEngine, private sanitizer: DomSanitizer) {
-        this.gameEngine.commandChain()
+    constructor(private gameService: GameService, private sanitizer: DomSanitizer) {
+        this.gameService.commandChain()
             .filter(command => typeof this[command.type] === "function")
             .subscribe(command =>this[command.type](command));
     }

@@ -16,7 +16,7 @@ public class CreaturesController {
     private CreaturesService service;
 
     @RequestMapping(value = "/creature")
-    List<Race> getCretures(){
+    List<Race> getRaces(){
         return service.getRaces();
     }
 }

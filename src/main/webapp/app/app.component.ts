@@ -1,8 +1,5 @@
 import {Component} from "@angular/core";
-import {Http} from "@angular/http";
 import {GameService} from "./game.service/game.service";
-import {CreatureStack} from "./model/creatureStack";
-import {GameEngine} from "./game_engine/game_engine.service";
 import {Router} from "@angular/router";
 
 
@@ -46,6 +43,6 @@ export class AppComponent {
         this.gameEngine.sendFinishMessage();
     }
 
-    constructor(private gameEngine: GameEngine, private router: Router) {
+    constructor(private gameEngine: GameService, private router: Router) {
     }
 }

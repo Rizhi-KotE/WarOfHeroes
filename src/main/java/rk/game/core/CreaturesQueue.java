@@ -16,10 +16,6 @@ import java.util.LinkedList;
 public class CreaturesQueue {
     private LinkedList<CreaturesStack> queue = new LinkedList<>();
 
-    void addCreature(CreaturesStack stack) {
-
-    }
-
     public CreaturesStack getCurrentCreature() {
         return queue.getFirst();
     }

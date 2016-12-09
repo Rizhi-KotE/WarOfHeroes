@@ -38,6 +38,7 @@ public class CreaturesService {
         File[] jsons = dir.listFiles(pathname -> filter.accept(pathname));
         for(File file: jsons){
             try {
+                Object
                 Race race = objectMapper.readValue(file, Race.class);
                 races.add(race);
             } catch (IOException e) {

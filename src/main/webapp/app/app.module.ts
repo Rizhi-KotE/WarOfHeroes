@@ -11,7 +11,6 @@ import {CreatureComponent} from "./creatures.component/creature.component";
 import {GameService} from "./game.service/game.service";
 import {CreaturesQueueComponent} from "./creatures_queue/creatures_queue";
 import {CreatureStackComponent} from "./creature_stack.component/creature_stack.component";
-import {GameEngine} from "./game_engine/game_engine.service";
 import {CellComponent} from "./field_cell/cell.component";
 import {CreatureCardComponent} from "./creature_card/creature_card.component";
 import {DialogComponent} from "./dialog/dialog.component";
@@ -39,8 +38,7 @@ import {DialogComponent} from "./dialog/dialog.component";
     providers: [
         WebSocketService,
         StompService,
-        GameService,
-        GameEngine
+        GameService
     ],
     declarations: [
         AppComponent,

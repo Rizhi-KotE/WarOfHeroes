@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core"
-import {GameEngine} from "../game_engine/game_engine.service";
 import {Router} from "@angular/router";
+import {GameService} from "../game.service/game.service";
 
 @Component({
     styleUrls:["app/dialog/dialog.component.css"],
@@ -17,7 +17,7 @@ import {Router} from "@angular/router";
 })
 export class DialogComponent implements OnInit {
     ngOnInit(): void {
-        this.gameEngine.commandChain().filter(command => command && typeof this[command.type] === "function")
+        this.gameService.commandChain().filter(command => command && typeof this[command.type] === "function")
             .subscribe(command => this[command.type](command));
     }
 
@@ -39,6 +39,6 @@ export class DialogComponent implements OnInit {
         this.visible = false;
     }
 
-    constructor(private gameEngine: GameEngine, private router: Router) {
+    constructor(private gameService: GameService, private router: Router) {
     }
 }

@@ -34,6 +34,14 @@ public class CreaturesStack {
         newStep();
     }
 
+    public int damage(CreaturesStack stack){
+        int pureDamage = creature.getDamage() * size;
+        double coef = 0.1 * (creature.getAttack() - stack.creature.getDefence());
+        int fullDamage = pureDamage + (int) (pureDamage * coef);
+        changeHealth(-fullDamage);
+        return fullDamage;
+    }
+
     public boolean isAlive() {
         return size > 0;
     }
