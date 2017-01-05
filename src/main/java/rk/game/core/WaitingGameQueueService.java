@@ -7,8 +7,10 @@ import rk.game.controller.GameController;
 import rk.game.model.Creature;
 import rk.game.model.CreaturesStack;
 import rk.game.model.Player;
+import rk.game.model.Race;
 import rk.game.services.CreaturesService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +29,9 @@ public class WaitingGameQueueService {
         if (waitingQueue.size() < 2) {
             return "wait";
         }
-        List<Player> playersToNewGame = Arrays.asList(waitingQueue.pollFirst(), waitingQueue.pollFirst());
+        ArrayList<Player> playersToNewGame = new ArrayList<>();
+        playersToNewGame.add(waitingQueue.pop());
+        playersToNewGame.add(waitingQueue.pop());
         dispatcher.runGame(playersToNewGame);
         return "gameStart";
     }

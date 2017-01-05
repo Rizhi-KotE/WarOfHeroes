@@ -96,12 +96,17 @@ public class Field {
         return matrix[x][y];
     }
 
-    public void moveCreature(CreaturesStack stack, Cell cell){
+    public int moveCreature(CreaturesStack stack, Cell cell) {
         Cell outputCell = creatures.get(stack);
         outputCell.setStack(null);
         Cell inputCell = matrix[cell.getX()][cell.getY()];
         matrix[cell.getX()][cell.getY()].setStack(stack);
         creatures.put(stack, inputCell);
+        return (int) Math.ceil(Point.distance(outputCell.x, outputCell.y, cell.x, cell.y));
+    }
+
+    public CreaturesStack getCreature(Cell cell){
+        return matrix[cell.x][cell.y].getStack();
     }
 
     public void moveCreature(CreaturesStack stack, int x, int y){
@@ -129,13 +134,6 @@ public class Field {
         Cell cell = creatures.remove(stack);
         matrix[cell.getX()][cell.getY()].setStack(null);
     }
-
-    public void addCreature(CreaturesStack stack, Cell cell){
-        Cell currentCreature = matrix[cell.getX()][cell.getY()];
-        currentCreature.setStack(stack);
-        creatures.put(stack, cell);
-    }
-
 
     public void addCreature(CreaturesStack stack, int x, int y){
         Cell cell = matrix[x][y];

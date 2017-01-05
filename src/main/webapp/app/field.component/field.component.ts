@@ -1,7 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {Cell} from "../model/Cell";
 import {GameService} from "../game.service/game.service";
-import {GameEngine} from "../game_engine/game_engine.service";
 import {MoveCreatureCommand} from "../model/moveCreatureCommand";
 import {AddCreatureCommand} from "../model/addCreauteCommand";
 import {RemoveCreatureCommand} from "../model/removeCreatureCommand";
@@ -14,10 +13,7 @@ import {ChangeTurnCommand} from "../model/ChangeTurnCommand";
 @Component({
     selector: "field",
     template: `
-<button (click)="placeCreatures()">Place Creatures</button>
-<button (click)="sendAvailableCellsMessage()">Get Available cells</button>
-<button (click)="sendWaitMessage()">Wait</button>
-<div style="position: relative">
+<div style="position: relative; display: inline-block;">
     <table>
         <tr *ngFor="let line of matrix"> 
             <td *ngFor="let cell of line"><cell 
@@ -26,7 +22,11 @@ import {ChangeTurnCommand} from "../model/ChangeTurnCommand";
         </tr>
     </table>
 </div>
-<creatures_queue></creatures_queue>`
+<div style="display: inline-block; vertical-align: top">
+    <button (click)="sendWaitMessage()">NEXT CREATURE</button>
+    <creatures_queue></creatures_queue>
+</div>`
+
 })
 
 
@@ -45,10 +45,10 @@ export class FieldComponent implements OnInit{
 
     matrix: Cell[][];
     currentCell: Cell;
-    yourTurn: boolean;
+    yourTurn: boolean = false;
 
-    constructor(private gameEngine: GameEngine, private gameService: GameService) {
-        this.gameEngine.commandChain()
+    constructor(private gameService: GameService) {
+        this.gameService.commandChain()
             .filter(command => typeof this[command.type] ===  "function")
             .subscribe(command =>this[command.type](command));
     }
@@ -72,7 +72,7 @@ export class FieldComponent implements OnInit{
                 this.gameService.sendMoveCreatureMessage(cell);
             else if (cell.availableEnemy) {
                 var message = new AttackMessage(cell);
-                this.gameEngine.sendAtackMessage(message);
+                this.gameService.sendAttackMessage(message);
             }
         }
     }
@@ -84,11 +84,11 @@ export class FieldComponent implements OnInit{
         command.cells.forEach(cell => this.matrix[cell.x][cell.y].available = true);
     }
 
-    removeCreatures() {
+    private removeCreatures() {
         this.clearMatrix("stack")
     }
 
-    clearMatrix(field?: string) {
+    private clearMatrix(field?: string) {
         this.matrix.forEach(line => line.forEach(
             cell => cell.clear(field)
         ));
@@ -100,7 +100,7 @@ export class FieldComponent implements OnInit{
             .forEach(cell=>this.matrix[cell.x][cell.y].availableEnemy = true);
     }
 
-    placeCreatures(): void {
+    sendCreaturesPlacesMessage(): void {
         this.gameService.sendCreaturesPlacingMessage();
     }
 
@@ -113,20 +113,12 @@ export class FieldComponent implements OnInit{
             this.gameService.sendWaitMessage();
     }
 
-    private calcCoordinateDelta(delta: number, second?: number) {
-        if (second) {
-            var delta = delta - second;
-        }
-        return delta ? delta < 0 ? -1 : 1 : 0;
-    }
-
     damage(command: DamageCommand): void {
         var cell = this.matrix[command.targetCell.x][command.targetCell.y];
         cell.stack = command.targetCell.stack;
     }
 
     changeTurn(command: ChangeTurnCommand): void {
-        // this.yourTurn = true;
         this.yourTurn = command.yourTurn;
     }
 }

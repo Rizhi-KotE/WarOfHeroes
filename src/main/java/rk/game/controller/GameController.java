@@ -40,15 +40,13 @@ public class GameController {
     @RequestMapping(value = "/game/start", method = RequestMethod.POST)
     public List<String> gameStart(Principal p, @RequestBody @Valid ArrayList<CreaturesStack> creatureChoice) {
         String username = p.getName();
-        Player player = new Player();
-        player.setUsername(username);
-        player.setCreatures(creatureChoice);
+        Player player = new Player(username, creatureChoice);
         return Arrays.asList(waitingGameQueueService.addPlayer(player));
     }
 
     @MessageMapping(value = "/queue/game.creatures")
     @SendToUser(value = "/queue/game.message")
-    public void getCreaturesPlacing(Principal principal) {
+    public void getCreaturesPlaces(Principal principal) {
         GameServer server = dispatcher.getServer(principal.getName());
         Player player = dispatcher.getPlayer(principal.getName());
         if (server != null) {
@@ -60,7 +58,6 @@ public class GameController {
     @MessageMapping(value = "/queue/game.moveMessage")
     public void MoveCreature(Principal principal, @Payload Cell cell) {
         GameServer server = dispatcher.getServer(principal.getName());
-        Player player = dispatcher.getPlayer(principal.getName());
         Map<Player, List<Command>> messages = server.messageMove(cell);
         messages.forEach((p, commands) -> sendMessage(p, commands));
     }
@@ -68,15 +65,19 @@ public class GameController {
     @MessageMapping(value = "/queue/game.attackMessage")
     public void attackCreature(Principal principal, AttackMessage message) {
         GameServer server = dispatcher.getServer(principal.getName());
-        Player player = dispatcher.getPlayer(principal.getName());
         Map<Player, List<Command>> messages = server.messageAttack(message);
         messages.forEach((p, commands) -> sendMessage(p, commands));
+
+    }
+
+    @MessageMapping(value = "queue/game.finish")
+    public void finishGame(Principal principal){
+        dispatcher.removePlayer(principal.getName());
     }
 
     @MessageMapping(value = "/queue/game.waitMessage")
     public void messageWait(Principal principal) {
         GameServer server = dispatcher.getServer(principal.getName());
-        Player player = dispatcher.getPlayer(principal.getName());
         Map<Player, List<Command>> messages = server.messageWait();
         messages.forEach((p, commands) -> sendMessage(p, commands));
     }
@@ -95,7 +96,7 @@ public class GameController {
         return server.getAvailableCellsCommand();
     }
 
-    public void sendMessage(Player player, Object message){
+    private void sendMessage(Player player, Object message){
         template.convertAndSendToUser(player.getUsername(), "/queue/game.message", message);
     }
 }

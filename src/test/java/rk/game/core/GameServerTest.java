@@ -14,6 +14,7 @@ import rk.game.services.CreaturesService;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -24,9 +25,9 @@ public class GameServerTest {
 
     private GameServer server;
 
-    private Player firstPlayer = new Player();
+    private Player firstPlayer = new Player("first", new ArrayList<>());
 
-    private Player secondPlayer = new Player();
+    private Player secondPlayer = new Player("second", new ArrayList<>());
 
     private Creature creature;
 
@@ -46,6 +47,14 @@ public class GameServerTest {
         server.messageMove(new Cell(6, 6));
         Map<Player, List<Command>> playerListMap = server.messageAttack(new AttackMessage(new Cell(5, 5)));
         assertTrue(playerListMap.get(firstPlayer).size() > 2);
+    }
+
+
+    @Test
+    public void testCeil(){
+        assertEquals(Math.ceil(.5), 1, 0);
+        assertEquals(Math.ceil(.2), 1, 0);
+        assertEquals(Math.ceil(.7), 1, 0);
     }
 
 

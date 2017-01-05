@@ -7,9 +7,9 @@ import java.util.List;
 @Data
 public class PlacingCommand implements Command{
     private final String type = "startPlacing";
-    private List<GetCreatureCommand> list;
+    private List<AddCreatureCommand> list;
 
-    public PlacingCommand(List<GetCreatureCommand> list) {
+    public PlacingCommand(List<AddCreatureCommand> list) {
         this.list = list;
     }
 }

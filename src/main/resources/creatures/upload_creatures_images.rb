@@ -1,15 +1,30 @@
 require "json"
 require "open-uri"
 
-file = open "inferno_creatures.crt"
-json = JSON::parse file.read
+@races_names = ['sylvan', 'inferno', 'haven']
 
-domain = "http://heroes.ag.ru"
+def upload_race_creature_images(race)
+  file = open "#{race}.crt"
+  json = JSON::parse file.read
 
-creatures = json.select { |creature| !creature["name"].empty? }
+  domain = "http://heroes.ag.ru"
 
-creatures.each do |creature|
-  url = domain + creature["imageurl"]
+  creatures = json['creatures']
+
+  creatures.each do |creature|
+    url = domain + creature["imageurl"]
+    file = open url
+    IO::write "#{creature['name']}.gif", file.read;
+  end
+end
+
+def upload_race_image (race)
+  url = "http://heroes.ag.ru/heroes5/towns/pic/#{race}.gif"
   file = open url
-  IO::write "#{creature['name']}.gif", file.read;
+  IO::write "#{race}.gif", file.read;
+end
+
+@races_names.each do |race|
+  upload_race_creature_images race
+  upload_race_image race
 end

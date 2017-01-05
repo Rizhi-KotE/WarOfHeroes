@@ -16,16 +16,14 @@ import java.util.LinkedList;
 public class CreaturesQueue {
     private LinkedList<CreaturesStack> queue = new LinkedList<>();
 
-    void addCreature(CreaturesStack stack) {
-
-    }
-
     public CreaturesStack getCurrentCreature() {
         return queue.getFirst();
     }
 
     public void popCreature() {
         queue.addLast(queue.pop());
+        if (queue.getFirst() != null)
+            queue.getFirst().newStep();
     }
 
     public void removeCreature(CreaturesStack stack) {

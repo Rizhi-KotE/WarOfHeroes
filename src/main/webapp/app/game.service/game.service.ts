@@ -7,10 +7,12 @@ import {Cell} from "../model/Cell";
 import {AttackMessage} from "../model/AttackMessage";
 import {Creature} from "../model/creature";
 import {ClientResponse} from "http";
+import {Race} from "../model/Race";
+import {Command} from "../model/Command";
 
 @Injectable()
 export class GameService {
-    subject: Subject<any>;
+    subject: Subject<any> = new Subject();
 
     startMessage(creaturesChoice: CreatureStack[]): Promise<any> {
         return this.http.post("/game/start", creaturesChoice).map(body => body.json()).toPromise();
@@ -28,12 +30,7 @@ export class GameService {
         this.stompService.send("/user/queue/game.creatures");
     }
 
-    makeAMove(message): Promise<any> {
-        return this.http.post("/game/makemove", message).map(body => body.json()).toPromise();
-    }
-
     constructor(private stompService: StompService, private http: Http) {
-        this.subject = new Subject();
         this.stompService.subscribe("/user/queue/game*", result => {
             this.subject.next(JSON.parse(result.body));
         });
@@ -75,7 +72,11 @@ export class GameService {
         this.stompService.send("/user/queue/game.attackMessage", message);
     }
 
-    getCreaturesRaces(): Promise<Map<string, Creature[]>>{
-        return this.http.get("/creature").map(responce => responce.json() as Map<string, Creature[]>).toPromise();
+    getCreaturesRaces(): Promise<Race[]>{
+        return this.http.get("/creature").map(responce => responce.json() as Race[]).toPromise();
+    }
+
+    sendFinishMessage() {
+        this.stompService.send("/user/queue/game.finish");
     }
 }

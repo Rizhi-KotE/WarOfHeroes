@@ -31,7 +31,7 @@ public class CommandMap {
         }
     }
 
-    public void addCommands(List<Command> commands){
+    public void addCommands(List<? extends Command> commands){
         for(Player player: map.keySet()){
             map.get(player).addAll(commands);
         }

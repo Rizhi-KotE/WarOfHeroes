@@ -1,35 +1,48 @@
 import {Component} from "@angular/core";
-import {Http} from "@angular/http";
 import {GameService} from "./game.service/game.service";
-import {CreatureStack} from "./model/creatureStack";
+import {Router} from "@angular/router";
+
 
 @Component({
     selector: "my-app",
+    styleUrls:["app/dialog/dialog.component.css"],
     template: `
-<div class="container">
-    <h1>War of Heroes</h1>
-    <div routerLink="/field">field</div>
-    <button (click)="startGame()">Start game</button>
-    <router-outlet></router-outlet>
-</div>`
+<div class="dialog" [hidden]="!visible">
+    <p class="message" [ngSwitch]="message">
+        <span *ngSwitchCase="'win'">Вы победили!!!</span>
+        <span *ngSwitchCase="'lose'">Вы проиграли!!!</span>
+    </p>
+    <button (click)="click()" ></button>
+</div>
+    <router-outlet></router-outlet>`
 })
 
 
 export class AppComponent {
-    constructor(private gameService: GameService, private http: Http) {
-
+    ngOnInit(): void {
+        this.gameEngine.commandChain().filter(command => command && typeof this[command.type] === "function")
+            .subscribe(command => this[command.type](command));
     }
 
-    startGame(): void {
-        this.http.get("/creature").toPromise().then(
-            responce => {
-                return responce.json()[0].map(creature => {
-                    var creatureChoice : CreatureStack = new CreatureStack();
-                    creatureChoice.size = 10;
-                    creatureChoice.creature = creature;
-                    return creatureChoice;
-                });
-            })
-            .then(creaturesChoise=>this.gameService.startMessage(creaturesChoise));
+    visible: boolean = false;
+    message: string = "win";
+
+    win() {
+        this.message = "win";
+        this.visible = true;
+    }
+
+    lose() {
+        this.message = "lose";
+        this.visible = true;
+    }
+
+    click() {
+        this.router.navigateByUrl("");
+        this.visible = false;
+        this.gameEngine.sendFinishMessage();
+    }
+
+    constructor(private gameEngine: GameService, private router: Router) {
     }
 }
